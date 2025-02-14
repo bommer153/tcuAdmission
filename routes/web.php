@@ -28,7 +28,8 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/dashboard', [ApplicantController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [ApplicantController::class, 'dashboard'])->name('dashboard');    
+    Route::get('/api/filterDate', [ApplicantController::class, 'filterDate'])->name('api.filterDate');
 
     Route::resource('applicant', applicantController::class);
     Route::put('applicant/updateRemarks/{applicant}', [applicantController::class,'updateRemarks'])->name('applicant.updateRemarks');

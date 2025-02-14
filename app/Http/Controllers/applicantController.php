@@ -25,8 +25,16 @@ class applicantController extends Controller
 
         $barangays = barangay::with('myApplicants','myApplicantsWithPermit')->get();
         $todaysFinish = applicant::whereDate('finish_date',now())->count();
+       
+        if (request("date")) {
+            $searchTerm = request("date");
+            $results = applicant::whereDate('finish_date',$searchTerm)->count();
+        }
+        
         $applicantTotal = applicant::count();
         return inertia('Dashboard',[
+            'queryParams' => request()->query() ?: null,
+            'results' => $results,
             'barangays' => $barangays,
             'todaysFinish' => $todaysFinish,
             'applicantTotal' => $applicantTotal,
@@ -293,5 +301,18 @@ class applicantController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Schedule Removed');
+    }
+
+    public function filterDate(){
+        $applicant = applicant::query();
+        
+       
+        
+        return inertia('dashboard',[
+               'applicants' => $applicants,
+               'totalApplicant' => $totalApplicant,
+               'queryParams' => request()->query() ?: null,
+               'success' => session('success'),
+        ]);
     }
 }

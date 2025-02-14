@@ -1,7 +1,19 @@
+import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 
-export default function Dashboard(props) {
+export default function Dashboard(props, queryParams = null) {
+
+        queryParams = props.queryParams || {};
+       const onChange = (date, e) => {        
+        e.preventDefault();
+        queryParams['date'] = date;
+        router.get(route("dashboard"),queryParams);
+
+       };
+   
+ 
+   
     return (
         <AuthenticatedLayout
             auth={props.auth}
@@ -13,6 +25,22 @@ export default function Dashboard(props) {
 
             
             <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <TextInput
+                        type="date"
+                        name="date"    
+                                        
+                        onChange={(e) => onChange(e.target.value, e)}
+                    />                  
+                </div>
+
+                {props.results && (
+                   <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                       <div className="p-6 text-gray-900 dark:text-gray-100">
+                            {props.results}
+                       </div>
+                   </div> 
+                )}
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
@@ -26,8 +54,7 @@ export default function Dashboard(props) {
                                                 <th className="px-3 py-2">With Permit</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            {console.log(props.barangays)}
+                                        <tbody>                                           
                                             {props.barangays.map((barangay) => (
                                                 <tr key={barangay.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                                     <td className="px-3 py-2">{barangay.barangay}</td>

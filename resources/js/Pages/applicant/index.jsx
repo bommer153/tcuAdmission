@@ -104,7 +104,6 @@ export default function index(props, queryParams = null) {
 
     const onKeyPress = (name, e) => {
         if (e.key !== "Enter") return;
-
         searchFieldChanged(name, e.target.value);
     };
 
