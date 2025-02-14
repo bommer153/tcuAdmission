@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.inertia-progress {
+    height: 80px !important;  /* Increase the height */
+    background-color: #ffffff !important;  /* Optional: Change the color */
+}
+
+/* Optional: Adjust the bar itself */
+.inertia-progress .inertia-progress-bar {
+    height: 80px !important;
+}
