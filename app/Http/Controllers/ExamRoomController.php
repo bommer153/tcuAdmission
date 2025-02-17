@@ -207,26 +207,37 @@ class ExamRoomController extends Controller
         ]);
 
        
-        
-        $base64Image  = $request->image_upload;
-        $extension = explode('/', mime_content_type($base64Image))[1];
-        $fileName = uniqid() . '.' . $extension;
-        $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Image));   
-
-        $update = applicant::findOrFail($applicant)
-        ->update([
+        $checkIfExist = applicant::where([
             'exam_date' => $request->examDate,
             'exam_time' => $request->examTime,
             'exam_room_no' => $request->examRoomNo,
             'exam_seat_no' => $seat,
-            'image_captured' => $fileName,
-            'printed_by' => auth::id(),
-            'finish_date' => now(),
-        ]);
+        ])->first();
 
-        $path = Storage::disk('snap')->put($fileName, $imageData);
-     
+        if($checkIfExist){
+            return redirect()->route('examroom.seat',['examroom'=>$examRoom,'seat'=>$seat])->with('success', 'Seat Already Taken'); 
+        }else{
+            $base64Image  = $request->image_upload;
+            $extension = explode('/', mime_content_type($base64Image))[1];
+            $fileName = uniqid() . '.' . $extension;
+            $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Image));   
+            
+            $update = applicant::findOrFail($applicant)
+            ->update([
+                'exam_date' => $request->examDate,
+                'exam_time' => $request->examTime,
+                'exam_room_no' => $request->examRoomNo,
+                'exam_seat_no' => $seat,
+                'image_captured' => $fileName,
+                'printed_by' => auth::id(),
+                'finish_date' => now(),
+            ]);
+    
+            $path = Storage::disk('snap')->put($fileName, $imageData);    
+            return redirect()->route('examroom.seat',['examroom'=>$examRoom,'seat'=>$seat])->with('success', 'Room Assigned Updated'); 
+        }
+       
 
-        return redirect()->route('examroom.seat',['examroom'=>$examRoom,'seat'=>$seat])->with('success', 'Room Assigned Updated');
+       
     }
 }
