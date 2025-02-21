@@ -21,20 +21,20 @@ class applicantController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function dashboard(){
+    public function dashboard(Request $request){
 
         $barangays = barangay::with('myApplicants','myApplicantsWithPermit')->get();
         $todaysFinish = applicant::whereDate('finish_date',now())->count();
        
         if (request("date")) {
-            $searchTerm = request("date");
+            $searchTerm = $request->query("date");
             $results = applicant::whereDate('finish_date',$searchTerm)->count();
         }
         
         $applicantTotal = applicant::count();
         return inertia('Dashboard',[
             'queryParams' => request()->query() ?: null,
-            'results' => $results,
+            'results' => $results ?: null,
             'barangays' => $barangays,
             'todaysFinish' => $todaysFinish,
             'applicantTotal' => $applicantTotal,

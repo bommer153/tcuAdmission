@@ -214,6 +214,8 @@ class ExamRoomController extends Controller
             'exam_seat_no' => $seat,
         ])->first();
 
+        
+
         if($checkIfExist){
             return redirect()->route('examroom.seat',['examroom'=>$examRoom,'seat'=>$seat])->with('success', 'Seat Already Taken'); 
         }else{

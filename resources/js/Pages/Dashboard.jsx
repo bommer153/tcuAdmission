@@ -1,19 +1,28 @@
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 export default function Dashboard(props, queryParams = null) {
 
-        queryParams = props.queryParams || {};
-       const onChange = (date, e) => {        
-        e.preventDefault();
-        queryParams['date'] = date;
-        router.get(route("dashboard"),queryParams);
+    const [myDates, setMyDates] = useState("");
 
-       };
-   
- 
-   
+    queryParams = props.queryParams || {};
+    const onChange = (date) => {
+
+        queryParams['date'] = date;
+        setMyDates(date);
+        router.get(route("dashboard"), queryParams, {
+            preserveState: true, // Prevents full-page reload
+        });
+
+    };
+
+
+
+
+
     return (
         <AuthenticatedLayout
             auth={props.auth}
@@ -23,24 +32,31 @@ export default function Dashboard(props, queryParams = null) {
             <Head title="Dashboard" />
 
 
-            
+
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <TextInput
-                        type="date"
-                        name="date"    
-                                        
-                        onChange={(e) => onChange(e.target.value, e)}
-                    />                  
+                <div className="grid grid-cols-4">
+                    <div></div>
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 float-right">
+                        <TextInput
+                            type="date"
+                            name="date"
+                            value={myDates}
+                            className = "float-right"
+                            onChange={(e) => onChange(e.target.value)}
+                        />
+                    </div>
+                    {props.results && (
+                        <div className="w-[300px] mx-auto sm:px-6 lg:px-8 float-left">
+                            <div className="p-2 text-gray-900 dark:text-gray-100 bg-red-400 rounded ">
+                                <b>Filtered Finish</b>:  {props.results}
+                            </div>
+                        </div>
+                    )}
+                    <div></div>
                 </div>
 
-                {props.results && (
-                   <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                       <div className="p-6 text-gray-900 dark:text-gray-100">
-                            {props.results}
-                       </div>
-                   </div> 
-                )}
+
+
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
@@ -54,7 +70,7 @@ export default function Dashboard(props, queryParams = null) {
                                                 <th className="px-3 py-2">With Permit</th>
                                             </tr>
                                         </thead>
-                                        <tbody>                                           
+                                        <tbody>
                                             {props.barangays.map((barangay) => (
                                                 <tr key={barangay.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                                     <td className="px-3 py-2">{barangay.barangay}</td>
