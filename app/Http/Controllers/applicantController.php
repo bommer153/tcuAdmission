@@ -29,12 +29,14 @@ class applicantController extends Controller
         if (request("date")) {
             $searchTerm = $request->query("date");
             $results = applicant::whereDate('finish_date',$searchTerm)->count();
+        }else{
+            $results = null;
         }
         
         $applicantTotal = applicant::count();
         return inertia('Dashboard',[
             'queryParams' => request()->query() ?: null,
-            'results' => $results ?: null,
+            'results' => $results,
             'barangays' => $barangays,
             'todaysFinish' => $todaysFinish,
             'applicantTotal' => $applicantTotal,
