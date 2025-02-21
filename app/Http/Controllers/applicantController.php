@@ -25,7 +25,8 @@ class applicantController extends Controller
 
         $barangays = barangay::with('myApplicants','myApplicantsWithPermit')->get();
         $todaysFinish = applicant::whereDate('finish_date',now())->count();
-       
+        $totalFinish = applicant::whereNotNull('finish_date')->count();
+
         if (request("date")) {
             $searchTerm = $request->query("date");
             $results = applicant::whereDate('finish_date',$searchTerm)->count();
@@ -39,6 +40,7 @@ class applicantController extends Controller
             'results' => $results,
             'barangays' => $barangays,
             'todaysFinish' => $todaysFinish,
+            'totalFinish' => $totalFinish,
             'applicantTotal' => $applicantTotal,
         ]);
      }

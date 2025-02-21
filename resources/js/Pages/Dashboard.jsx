@@ -85,9 +85,12 @@ export default function Dashboard(props, queryParams = null) {
                                     <div className="bg-blue-500 rounded m-5 p-5">
                                         Finish Today : {props.todaysFinish}
                                     </div>
+                                    <div className="bg-red-600 rounded m-5 p-5">
+                                        Finished Applicant: {props.totalFinish}
+                                    </div>
                                     <div className="bg-green-600 rounded m-5 p-5">
                                         Total Applicant: {props.applicantTotal}
-                                    </div>
+                                    </div>                                   
                                 </div>
                             </div>
                         </div>
