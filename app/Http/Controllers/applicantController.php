@@ -34,6 +34,9 @@ class applicantController extends Controller
             $results = null;
         }
         
+       
+        
+
         $applicantTotal = applicant::count();
         return inertia('Dashboard',[
             'queryParams' => request()->query() ?: null,
