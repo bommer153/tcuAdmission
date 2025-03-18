@@ -55,7 +55,7 @@ export default function Dashboard(props, queryParams = null) {
                     <div></div>
                 </div>
 
-
+                    
 
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -64,6 +64,7 @@ export default function Dashboard(props, queryParams = null) {
                                 <div className="col-span-2">
                                     <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 overflow-auto">
                                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-white border-b-2 border-gray-500">
+                                        
                                             <tr>
                                                 <th className="px-3 py-2">Barangay</th>
                                                 <th className="px-3 py-2">Total</th>
@@ -86,7 +87,7 @@ export default function Dashboard(props, queryParams = null) {
                                         Finish Today : {props.todaysFinish}
                                     </div>
                                     <div className="bg-red-600 rounded m-5 p-5">
-                                        Finished Applicant: {props.totalFinish}
+                                       Finished Applicant: {props.totalFinish}
                                     </div>
                                     <div className="bg-green-600 rounded m-5 p-5">
                                         Total Applicant: {props.applicantTotal}

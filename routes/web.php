@@ -24,12 +24,14 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-
+Route::get('/api/getApplicant', [ApplicantController::class, 'getApplicantApi'])->name('api.getApplicantApi');
 
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [ApplicantController::class, 'dashboard'])->name('dashboard');    
     Route::get('/api/filterDate', [ApplicantController::class, 'filterDate'])->name('api.filterDate');
+
+    
 
     Route::resource('applicant', applicantController::class);
     Route::put('applicant/updateRemarks/{applicant}', [applicantController::class,'updateRemarks'])->name('applicant.updateRemarks');

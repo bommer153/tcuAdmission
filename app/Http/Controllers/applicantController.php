@@ -25,7 +25,9 @@ class applicantController extends Controller
 
         $barangays = barangay::with('myApplicants','myApplicantsWithPermit')->get();
         $todaysFinish = applicant::whereDate('finish_date',now())->count();
-        $totalFinish = applicant::whereNotNull('finish_date')->count();
+        $totalFinish = applicant::join('barangays', 'barangays.barangay', '=', 'applicants.barangay')->whereNotNull('applicants.printed_by')->count();
+        //$totalFinish = applicant::whereNotNull('printed_by')->count(); 
+        //applicant::whereNotNull('finish_date')->count()
 
         if (request("date")) {
             $searchTerm = $request->query("date");
@@ -34,7 +36,7 @@ class applicantController extends Controller
             $results = null;
         }
         
-        $applicantTotal = applicant::count();
+        $applicantTotal = applicant::join('barangays', 'barangays.barangay', '=', 'applicants.barangay')->count();
         return inertia('Dashboard',[
             'queryParams' => request()->query() ?: null,
             'results' => $results,
@@ -203,8 +205,8 @@ class applicantController extends Controller
 
             'junior_high_school' => $request->juniorHighschool,               
             'junior_high_school_year_graduated' => $request->juniorHighschoolYear,               
-            'senior_high_school' => $request->seniorHighchool,               
-            'senior_high_school_year_graduated' => $request->seniorHighchoolYear,   
+            'senior_high_school' => $request->seniorHighschool,               
+            'senior_high_school_year_graduated' => $request->seniorHighschoolYear,   
             'lrn' => $request->lrn,   
             'strand' => $request->strand,   
             'g11_gwa1' => $request->g11gwa1,   
@@ -317,6 +319,12 @@ class applicantController extends Controller
                'totalApplicant' => $totalApplicant,
                'queryParams' => request()->query() ?: null,
                'success' => session('success'),
+        ]);
+    }
+
+    public function getApplicantApi(){
+        return response()->json([
+            'applicants' => applicant::get()->take(10),            
         ]);
     }
 }
