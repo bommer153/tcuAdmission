@@ -372,71 +372,48 @@ export default function index(props, queryParams = null) {
                     <div className="max-w-7xl mx-auto lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="text-gray-900 dark:text-gray-100 ">
+                                {props.auth.user.role === '3' ?
+                                    <div className="bg-white dark:bg-gray-800 mt-10 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"></div>
+                                    :
+                                    <form
+                                        onSubmit={onSubmitRemarks}
+                                        className="bg-white dark:bg-gray-800 mt-5 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"
+                                    >
+                                        <div className="mt-4 col-span-2">
+                                            <InputLabel htmlFor="remarks" value="Remarks" />
+                                            <TextInput
+                                                id="remarks"
+                                                type="text"
+                                                name="remarks"
+                                                value={remarksData.remarks || ""}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) => setRemarksData("remarks", e.target.value)}
+                                            />
+                                            <InputError message={remarksError.remarks} className="mt-2" />
+                                        </div>
 
-                                <form
-                                    onSubmit={onSubmitRemarks}
-                                    className="bg-white dark:bg-gray-800 mt-5 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"
-                                >
-                                    <div className="mt-4 col-span-2">
-                                        <InputLabel htmlFor="remarks" value="Remarks" />
-                                        <TextInput
-                                            id="remarks"
-                                            type="text"
-                                            name="remarks"
-                                            value={remarksData.remarks || ""}
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setRemarksData("remarks", e.target.value)}
-                                        />
-                                        <InputError message={remarksError.remarks} className="mt-2" />
-                                    </div>
+                                        <div className="mt-4 ">
+                                            <InputLabel htmlFor="status" value="Status" />
+                                            <SelectInput
+                                                id="status"
+                                                name="status"
+                                                value={remarksData.status || ""}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) => setRemarksData("status", e.target.value)}
+                                            >
+                                                <option value="">Select Status</option>
+                                                <option value="Complete">Complete</option>
+                                                <option value="Incomplete">Incomplete</option>
+                                            </SelectInput>
+                                            <InputError message={remarksError.status} className="mt-2" />
+                                        </div>
+                                        <div className="mt-4 bm-3">
+                                            <Button id="button">Validate</Button>
+                                        </div>
 
-
-                                    {
-                                        props.auth.user.role === '3' ?
-                                            <>
-                                                <div className="mt-4 hidden" >
-                                                    <InputLabel htmlFor="status" value="Status" />
-                                                    <SelectInput
-                                                        id="status"
-                                                        name="status"
-                                                        value={remarksData.status || ""}
-                                                        className="mt-1 block w-full"
-                                                        onChange={(e) => setRemarksData("status", e.target.value)}
-                                                    >
-                                                        <option value="">Select Status</option>
-                                                        <option value="Complete">Complete</option>
-                                                        <option value="Incomplete">Incomplete</option>
-                                                    </SelectInput>
-                                                    <InputError message={remarksError.status} className="mt-2" />
-                                                </div>
-                                                <div className="mt-10 bm-3">
-                                                    <Button id="button">Remark</Button>
-                                                </div>
-                                            </>
-                                            :
-                                            <>
-                                                <div className="mt-4 ">
-                                                    <InputLabel htmlFor="status" value="Status" />
-                                                    <SelectInput
-                                                        id="status"
-                                                        name="status"
-                                                        value={remarksData.status || ""}
-                                                        className="mt-1 block w-full"
-                                                        onChange={(e) => setRemarksData("status", e.target.value)}
-                                                    >
-                                                        <option value="">Select Status</option>
-                                                        <option value="Complete">Complete</option>
-                                                        <option value="Incomplete">Incomplete</option>
-                                                    </SelectInput>
-                                                    <InputError message={remarksError.status} className="mt-2" />
-                                                </div>
-                                                <div className="mt-4 bm-3">
-                                                    <Button id="button">Validate</Button>
-                                                </div>
-                                            </>
-                                    }
-
-                                </form>
+                                    </form>
+                                
+                                }
 
                                 <div className="grid grid-cols-2">
                                     <div>
