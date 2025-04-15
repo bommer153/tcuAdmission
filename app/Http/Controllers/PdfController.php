@@ -299,11 +299,28 @@ class PdfController extends Controller
         $examTime = ExamTime::get();
         $examRooms = ExamRoom::get();
 
+        $applicantResultExam = DB::table('applicants')
+             ->select(
+                  DB::raw("CONCAT(first_name, ' ', middle_name, ' ', last_name) as name"),
+                  DB::raw("(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2))) * 0.4 as gwascore"),
+                  DB::raw("(((exam_score / 150) * 100 * 0.5) + 50) * 0.6 as final_exam_score"),
+                  DB::raw("(((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6) as overall"),
+                  'exam_score',
+                  'first_course as firstChoice',
+                  'second_course as secondChoice',
+                  'third_course as thirdChoice'
+              )
+            //   -where('status', '') // original code
+              ->whereNotNull('printed_by')
+              ->orderBy('overall','desc')
+              ->get();
+
         return inertia('reports/index', [
             'success' => session('success'),
             'examDates' => $examDate,
             'examTimes' => $examTime,
             'examRooms' => $examRooms,
+            'applicantResultExam' => $applicantResultExam,
         ]);
     }
 
@@ -568,21 +585,24 @@ class PdfController extends Controller
             $count = 1;
         }
 
+        // SELECT COUNT(*), status FROM `applicants` WHERE printed_by IS NOT null GROUP BY status 
 
         $applicants = DB::table('applicants')
-            ->select(
-                DB::raw("CONCAT(first_name, ' ', middle_name, ' ', last_name) as name"),
-                DB::raw("(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2))) * 0.4 as gwascore"),
-                DB::raw("(((exam_score / 150) * 100 * 0.5) + 50) * 0.6 as final_exam_score"),
-                DB::raw("(((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6) as overall"),
-                'exam_score',
-                'first_course as firstChoice',
-                'second_course as secondChoice',
-                'third_course as thirdChoice'
-            )
-            ->orderBy('overall','desc')
-            ->take($count)
-            ->get();
+             ->select(
+                  DB::raw("CONCAT(first_name, ' ', middle_name, ' ', last_name) as name"),
+                  DB::raw("(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2))) * 0.4 as gwascore"),
+                  DB::raw("(((exam_score / 150) * 100 * 0.5) + 50) * 0.6 as final_exam_score"),
+                  DB::raw("(((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6) as overall"),
+                  'exam_score',
+                  'first_course as firstChoice',
+                  'second_course as secondChoice',
+                  'third_course as thirdChoice'
+              )
+            //   -where('status', '') // original code
+              ->whereNotNull('printed_by')
+              ->orderBy('overall','desc')
+              ->take($count)
+              ->get();
 
         $pdf = new TCPDF('L', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 

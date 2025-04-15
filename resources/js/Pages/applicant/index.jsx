@@ -24,7 +24,7 @@ export default function index(props, queryParams = null) {
     const openModal = (user) => {
         setSelectedUser(user);
         setIsModalOpen(true);
-     
+
         setRemarksData({ ...user, fromHome: true });
 
     };
@@ -291,7 +291,7 @@ export default function index(props, queryParams = null) {
                                         <th className="px-3 py-3"></th>
                                         <th className="px-3 py-3"></th>
                                         <th className="px-3 py-3"></th>
-                                      
+
                                     </tr>
 
                                     <tr>
@@ -302,7 +302,7 @@ export default function index(props, queryParams = null) {
                                         <th className="px-3 py-3">Validator</th>
                                         <th className="px-3 py-3">Printed By</th>
                                         <th className="px-3 py-3"></th>
-                                      
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -316,7 +316,7 @@ export default function index(props, queryParams = null) {
 
                                             <th className="px-3 py-2 text-gray-100 text-nowrap hover:underline">
                                                 <Link href={route("applicant.show", applicant.id)}>
-                                                    {applicant.first_name} {applicant.middle_name} {applicant.last_name}   
+                                                    {applicant.first_name} {applicant.middle_name} {applicant.last_name}
                                                     {applicant.applicantType === 'ALS' && (
                                                         <span className="bg-green-500 text-black p-1 rounded">{applicant.applicantType}</span>
                                                     )}
@@ -348,7 +348,7 @@ export default function index(props, queryParams = null) {
                                                         <FontAwesomeIcon icon={faStar} />
                                                     </Button>
                                                 )}
-                                            </td>                                          
+                                            </td>
                                         </tr>
 
                                     ))}
@@ -372,7 +372,7 @@ export default function index(props, queryParams = null) {
                     <div className="max-w-7xl mx-auto lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="text-gray-900 dark:text-gray-100 ">
-                                
+
                                 <form
                                     onSubmit={onSubmitRemarks}
                                     className="bg-white dark:bg-gray-800 mt-5 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"
@@ -390,30 +390,57 @@ export default function index(props, queryParams = null) {
                                         <InputError message={remarksError.remarks} className="mt-2" />
                                     </div>
 
-                                    <div className="mt-4 ">
-                                        <InputLabel htmlFor="status" value="Status" />
-                                        <SelectInput
-                                            id="status"
-                                            name="status"
-                                            value={remarksData.status || ""}
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setRemarksData("status", e.target.value)}
-                                        >
-                                            <option value="">Select Status</option>
-                                            <option value="Complete">Complete</option>
-                                            <option value="Incomplete">Incomplete</option>
-                                        </SelectInput>
-                                        <InputError message={remarksError.status} className="mt-2" />
-                                    </div>
 
-                                    <div className="mt-4 bm-3">
-                                        <Button id="button">Validate</Button>
-                                    </div>
+                                    {
+                                        props.auth.user.role === '3' ?
+                                            <>
+                                                <div className="mt-4 hidden" >
+                                                    <InputLabel htmlFor="status" value="Status" />
+                                                    <SelectInput
+                                                        id="status"
+                                                        name="status"
+                                                        value={remarksData.status || ""}
+                                                        className="mt-1 block w-full"
+                                                        onChange={(e) => setRemarksData("status", e.target.value)}
+                                                    >
+                                                        <option value="">Select Status</option>
+                                                        <option value="Complete">Complete</option>
+                                                        <option value="Incomplete">Incomplete</option>
+                                                    </SelectInput>
+                                                    <InputError message={remarksError.status} className="mt-2" />
+                                                </div>
+                                                <div className="mt-10 bm-3">
+                                                    <Button id="button">Remark</Button>
+                                                </div>
+                                            </>
+                                            :
+                                            <>
+                                                <div className="mt-4 ">
+                                                    <InputLabel htmlFor="status" value="Status" />
+                                                    <SelectInput
+                                                        id="status"
+                                                        name="status"
+                                                        value={remarksData.status || ""}
+                                                        className="mt-1 block w-full"
+                                                        onChange={(e) => setRemarksData("status", e.target.value)}
+                                                    >
+                                                        <option value="">Select Status</option>
+                                                        <option value="Complete">Complete</option>
+                                                        <option value="Incomplete">Incomplete</option>
+                                                    </SelectInput>
+                                                    <InputError message={remarksError.status} className="mt-2" />
+                                                </div>
+                                                <div className="mt-4 bm-3">
+                                                    <Button id="button">Validate</Button>
+                                                </div>
+                                            </>
+                                    }
+
                                 </form>
 
                                 <div className="grid grid-cols-2">
                                     <div>
-                                    <a href={route('applicant.show' ,1)} target="_blank" className="hover:underline mb-5">
+                                        <a href={route('applicant.show', 1)} target="_blank" className="hover:underline mb-5">
                                             Edit Applicant
                                         </a>
                                         <h1><span className="font-bold">First Name :</span> {remarksData.first_name}</h1>

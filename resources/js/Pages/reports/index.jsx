@@ -5,8 +5,11 @@ import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
+import * as XLSX from 'xlsx/xlsx.mjs';
+import { faDownload, faEye, faFile, faStar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default function Reports({ auth, errors, examDates, examTimes, examRooms }) {
+export default function Reports({ auth, errors, examDates, examTimes, examRooms, applicantResultExam }) {
 
     const { data, setData } = useForm({
         date: "",
@@ -14,9 +17,21 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms 
         room: "",
     })
 
-    const { data:counts, setData:setCounts } = useForm({
-        count : ""
+    const { data: counts, setData: setCounts } = useForm({
+        count: ""
     })
+
+    const trackCount = applicantResultExam.length;
+
+    const handleExcel = () => {
+
+        const wb = XLSX.utils.book_new(),
+            ws = XLSX.utils.json_to_sheet(applicantResultExam);
+
+        XLSX.utils.book_append_sheet(wb, ws, "ExamResult");
+
+        XLSX.writeFile(wb, `AdmissionTCU(2025-2026).xlsx`);
+    };
 
     return (
         <AuthenticatedLayout
@@ -81,18 +96,18 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms 
                                             ))}
                                         </SelectInput>
                                         <InputError message={errors.room} className="mt-2" />
-                                    </div>                                    
+                                    </div>
                                 </form>
                                 <div className="mt-5">
-                                    <a href={route('pdf.seatRecord',{date:data.date, time:data.time, room:data.room })} target="_blank">  
+                                    <a href={route('pdf.seatRecord', { date: data.date, time: data.time, room: data.room })} target="_blank">
                                         <Button className="mr-3"> Seat Report </Button>
                                     </a>
-                                  
-                                    <a href={route('pdf.seatPlan',{date:data.date, time:data.time, room:data.room })} target="_blank">  
+
+                                    <a href={route('pdf.seatPlan', { date: data.date, time: data.time, room: data.room })} target="_blank">
                                         <Button className="mr-3"> Seat Plan </Button>
                                     </a>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -110,22 +125,84 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms 
                                             type="number"
                                             className="mt-1 block w-full"
                                             onChange={(e) => setCounts("count", e.target.value)}
-                                        >                                           
+                                        >
                                         </TextInput>
                                         <InputError message={errors.count} className="mt-2" />
-                                    </div>                                
+                                    </div>
+
                                 </form>
-                                <div className="mt-5">                                    
-                                    <a href={route('pdf.result',{counts:counts.count })} target="_blank">  
+                                <div className="mt-5">
+                                    <a href={route('pdf.result', { counts: counts.count })} target="_blank">
                                         <Button className="mr-3">Print Exam Result </Button>
                                     </a>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+
+            <div className=" p-5 px-20">
+
+                <div>
+                    <button 
+                        onClick={handleExcel}
+                        className='text-white'
+                    >
+                        <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
+                    </button>
+                </div>
+                <table cellspacing="0" cellpadding="4" className='bg-white'>
+                    <tr>
+                        <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>#</th>
+                        <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>Name</th>
+                        <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>Overall</th>
+                        <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>Exam (60%)</th>
+                        <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>GWA (40%)</th>
+                        <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>1st Choice</th>
+                        <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>2nd Choice</th>
+                        <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>3rd Choice</th>
+                    </tr>
+
+
+
+                    {applicantResultExam.map((applicant, index) => (
+                        <tr key={applicant.id}>
+                            <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '8px' }}>{index + 1}</th>
+                            <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.name}</th>
+                            <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
+                            <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score}) {applicant.exam_score}</th>
+                            <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.gwascore).toFixed(2)}</th>
+                            <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.firstChoice}</th>
+                            <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.secondChoice}</th>
+                            <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.thirdChoice}</th>
+                        </tr>
+                    ))}
+
+
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td className=" text-right p-5">
+                            <div>
+                                <b style={{ fontSize: '12px' }}>
+                                    Total: {trackCount}
+                                    <br /><br /><br />
+                                    Engr. Ferdinand E. Rubio<br />
+                                    MIS Director
+                                </b>
+                            </div>
+                        </td>
+                    </tr>
+                </table >
+            </div >
+
+        </AuthenticatedLayout >
     );
 }
