@@ -36,7 +36,7 @@ class applicantController extends Controller
             $results = null;
         }
         
-        $applicantTotal = applicant::join('barangays', 'barangays.barangay', '=', 'applicants.barangay')->count();
+        $applicantTotal = applicant::count();
         return inertia('Dashboard',[
             'queryParams' => request()->query() ?: null,
             'results' => $results,

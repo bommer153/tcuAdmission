@@ -13,9 +13,11 @@ class Barangay extends Model
     {
         return $this->hasMany(applicant::class, 'barangay','barangay');
     }
-
+    
     public function myApplicantsWithPermit()
     {
         return $this->hasMany(applicant::class, 'barangay','barangay')->whereNotNull('printed_by');
     }
+
+  
 }
