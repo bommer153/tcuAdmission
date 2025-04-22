@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\applicantController;
 use App\Http\Controllers\ExamRoomController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ActionLogsController;
+
 use App\Http\Controllers\PdfController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -30,11 +32,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [ApplicantController::class, 'dashboard'])->name('dashboard');    
     Route::get('/api/filterDate', [ApplicantController::class, 'filterDate'])->name('api.filterDate');
-
+    
+    //Logs
+    Route::get('/action-logs', [ActionLogsController::class,'index'])->name('actionLogs.index');
     
 
     Route::resource('applicant', applicantController::class);
     Route::put('applicant/updateRemarks/{applicant}', [applicantController::class,'updateRemarks'])->name('applicant.updateRemarks');
+    Route::put('applicant/updateAthlete/{applicant}', [applicantController::class,'updateAthlete'])->name('applicant.updateAthlete');
     Route::put('applicant/score/{applicant}', [applicantController::class,'updateScore'])->name('applicant.updateScore');
     Route::put('applicant/removesched/{applicant}', [applicantController::class,'removeSched'])->name('applicant.removeSched');
 
@@ -62,6 +67,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+
 });
 
 require __DIR__.'/auth.php';

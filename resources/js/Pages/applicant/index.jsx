@@ -14,7 +14,7 @@ import Modal from '@/Components/Modal';
 
 
 export default function index(props, queryParams = null) {
-
+    console.log(props);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
@@ -26,6 +26,7 @@ export default function index(props, queryParams = null) {
         setIsModalOpen(true);
 
         setRemarksData({ ...user, fromHome: true });
+        setAthleteData({ ...user });
 
     };
 
@@ -92,6 +93,12 @@ export default function index(props, queryParams = null) {
 
     });
 
+    const { data: athleteData, setData: setAthleteData, put: assignAthlete, errors: athleteError } = useForm({
+        athlete: '',
+        fromHome: true,
+    });
+
+
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -144,6 +151,20 @@ export default function index(props, queryParams = null) {
                 if (props.success) {
                     setSelectedUser(null);
                     setIsScoreOpen(false);
+                } else {
+
+                }
+            },
+        });
+    }
+
+    const onSubmitAthlete = (e) => {
+        e.preventDefault();
+        assignAthlete(route('applicant.updateAthlete', athleteData.id), {
+            onFinish: () => {
+                if (athleteError.athlete.message) {
+                    setSelectedUser(null);
+                    setIsModalOpen(false);
                 } else {
 
                 }
@@ -367,7 +388,7 @@ export default function index(props, queryParams = null) {
                     closeable={true}
                     onClose={closeModal}
                     width="sm:max-w-5xl"
-                    height="h-[750px]" // Custom height
+                    height="" // Custom height
                 >
                     <div className="max-w-7xl mx-auto lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -375,44 +396,72 @@ export default function index(props, queryParams = null) {
                                 {props.auth.user.role === '3' ?
                                     <div className="bg-white dark:bg-gray-800 mt-10 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"></div>
                                     :
-                                    <form
-                                        onSubmit={onSubmitRemarks}
-                                        className="bg-white dark:bg-gray-800 mt-5 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"
-                                    >
-                                        <div className="mt-4 col-span-2">
-                                            <InputLabel htmlFor="remarks" value="Remarks" />
-                                            <TextInput
-                                                id="remarks"
-                                                type="text"
-                                                name="remarks"
-                                                value={remarksData.remarks || ""}
-                                                className="mt-1 block w-full"
-                                                onChange={(e) => setRemarksData("remarks", e.target.value)}
-                                            />
-                                            <InputError message={remarksError.remarks} className="mt-2" />
-                                        </div>
+                                    <>
+                                        <form
+                                            onSubmit={onSubmitRemarks}
+                                            className="bg-white dark:bg-gray-800 mt-5 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"
+                                        >
+                                            <div className="mt-4 col-span-2">
+                                                <InputLabel htmlFor="remarks" value="Remarks" />
+                                                <TextInput
+                                                    id="remarks"
+                                                    type="text"
+                                                    name="remarks"
+                                                    value={remarksData.remarks || ""}
+                                                    className="mt-1 block w-full"
+                                                    onChange={(e) => setRemarksData("remarks", e.target.value)}
+                                                />
+                                                <InputError message={remarksError.remarks} className="mt-2" />
+                                            </div>
 
-                                        <div className="mt-4 ">
-                                            <InputLabel htmlFor="status" value="Status" />
-                                            <SelectInput
-                                                id="status"
-                                                name="status"
-                                                value={remarksData.status || ""}
-                                                className="mt-1 block w-full"
-                                                onChange={(e) => setRemarksData("status", e.target.value)}
-                                            >
-                                                <option value="">Select Status</option>
-                                                <option value="Complete">Complete</option>
-                                                <option value="Incomplete">Incomplete</option>
-                                            </SelectInput>
-                                            <InputError message={remarksError.status} className="mt-2" />
-                                        </div>
-                                        <div className="mt-4 bm-3">
-                                            <Button id="button">Validate</Button>
-                                        </div>
+                                            <div className="mt-4 ">
+                                                <InputLabel htmlFor="status" value="Status" />
+                                                <SelectInput
+                                                    id="status"
+                                                    name="status"
+                                                    value={remarksData.status || ""}
+                                                    className="mt-1 block w-full"
+                                                    onChange={(e) => setRemarksData("status", e.target.value)}
+                                                >
+                                                    <option value="">Select Status</option>
+                                                    <option value="Complete">Complete</option>
+                                                    <option value="Incomplete">Incomplete</option>
+                                                </SelectInput>
+                                                <InputError message={remarksError.status} className="mt-2" />
+                                            </div>
+                                            <div className="mt-4 bm-3">
+                                                <Button id="button">Validate</Button>
+                                            </div>
 
-                                    </form>
-                                
+                                        </form>
+
+                                        <form onSubmit={onSubmitAthlete} >
+                                            <div className="mt-4 ">
+                                                <InputLabel htmlFor="athlete" value="Athlete" />
+                                                <SelectInput
+                                                    id="athlete"
+                                                    name="athlete"
+                                                    value={athleteData.athlete || ""}
+                                                    className="mt-1 block w-full"
+                                                    onChange={(e) => setAthleteData("athlete", e.target.value)}
+                                                >
+                                                    <option value="">Select Status</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </SelectInput>
+                                                <InputError message={athleteError.athlete} className="mt-2" />
+                                            </div>
+                                            <button className='my-4 bg-blue-600 text-white rounded p-2 hover:bg-green-600'>submit</button>
+                                        </form>
+
+                                    </>
+
+
+                                }
+                                {athleteData.athlete == 'Yes' &&
+                                    <div className='flex justify-end'>
+                                        <div className='bg-green-700 text-white inline-block p-2 '>ATHLETE</div>
+                                    </div>
                                 }
 
                                 <div className="grid grid-cols-2">

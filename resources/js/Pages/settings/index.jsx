@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { toast } from 'react-toastify';
 
-export default function Settings({ auth, errors, examDates, examTimes, examRooms ,success }) {
+export default function Settings({ auth , errors, examDates, examTimes, examRooms ,success }) {
 
     //GET Data
     const { data: examDateData, setData: setExamDateData, post: addDate, errors: examDateError } = useForm({

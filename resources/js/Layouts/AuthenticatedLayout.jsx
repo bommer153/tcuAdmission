@@ -53,11 +53,20 @@ export default function Authenticated({ auth, header, children }) {
 
                             )}
                             {(auth.user.role === '1') && (
-                                <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                    <NavLink href={route('settings.index')} active={route().current('settings.index')}>
-                                        Settings
-                                    </NavLink>
-                                </div>
+                                <>
+                                    <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                        <NavLink href={route('settings.index')} active={route().current('settings.index')}>
+                                            Settings
+                                        </NavLink>
+                                    </div>
+
+                                    <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                        <NavLink href={route('actionLogs.index')} active={route().current('actionLogs.index')}>
+                                            Logs
+                                        </NavLink>
+                                    </div>
+
+                                </>
                             )}
                         </div>
 

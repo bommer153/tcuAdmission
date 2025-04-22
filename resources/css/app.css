@@ -12,3 +12,15 @@
 .inertia-progress .inertia-progress-bar {
     height: 80px !important;
 }
+
+.course-list {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .course-list.show {
+    max-height: 500px; /* Adjust as needed */
+    opacity: 1;
+  }

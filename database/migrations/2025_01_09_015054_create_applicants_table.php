@@ -49,6 +49,8 @@ return new class extends Migration
             $table->string('als_accreditation_equivalent_rating')->nullable();
             $table->string('als_accreditation_equivalent_remarks')->nullable();
 
+            $table->text( 'athlete')->nullable();
+
             $table->string('applicantType');
             $table->string('first_course');
             $table->string('second_course');
