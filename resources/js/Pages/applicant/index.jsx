@@ -356,7 +356,7 @@ export default function index(props, queryParams = null) {
                                                     <FontAwesomeIcon icon={faEye} />
                                                 </Button>
                                                 {(props.auth.user.role === '1' || props.auth.user.role === '4') && (
-                                                    <a href={route('pdf.examPermit', applicant.id)} target="_blank">
+                                                    <a href={route('pdf.examPermit', applicant.id)} target="_blank" title="RE-PRINT">
                                                         <Button className="bg-green-500">
                                                             <FontAwesomeIcon icon={faFile} />
                                                         </Button>

@@ -32,20 +32,28 @@ class applicantController extends Controller
         //applicant::whereNotNull('finish_date')->count()
 
         $athleteApplicant = applicant::where('athlete', '=', 'Yes')
-                                        ->select('id', 'first_name' , 'middle_name', 'last_name',  
-                                                    'first_course', 'second_course', 'third_course','exam_score')
-                                        ->orderBy('exam_score','desc')
-                                        ->get()
-                                        ->map(function ($applicant) {
-                                            return [
-                                                'id' => $applicant->id,
-                                                'name' =>strtoupper(trim($applicant->last_name)) . ', ' . ucwords(strtolower(trim("{$applicant->first_name} {$applicant->middle_name}"))),
-                                                'first_course' => $applicant->first_course,
-                                                'second_course' => $applicant->second_course,
-                                                'third_course' => $applicant->third_course,
-                                                'exam_score' => $applicant->exam_score,
-                                            ];
-                                        });
+            ->select(
+                'id',
+                'first_name',
+                'middle_name',
+                'last_name',
+                'first_course',
+                'second_course',
+                'third_course',
+                'exam_score'
+            )
+            ->orderBy('exam_score', 'desc')
+            ->get()
+            ->map(function ($applicant) {
+                return [
+                    'id' => $applicant->id,
+                    'name' => strtoupper(trim($applicant->last_name)) . ', ' . ucwords(strtolower(trim("{$applicant->first_name} {$applicant->middle_name}"))),
+                    'first_course' => $applicant->first_course,
+                    'second_course' => $applicant->second_course,
+                    'third_course' => $applicant->third_course,
+                    'exam_score' => $applicant->exam_score,
+                ];
+            });
         // dd($athleteApplicant);
 
         if (request("date")) {
@@ -176,7 +184,6 @@ class applicantController extends Controller
      */
     public function update(Request $request, applicant $applicant)
     {
-
         $request->validate([
             'firstName' => 'required',
             'middleName' => 'required',
@@ -197,16 +204,9 @@ class applicantController extends Controller
             'parentName' => 'required',
             'parentContactNo' => 'required',
             'parentComelecNo' => 'required',
-
-
-
-
-
         ]);
 
-        //dd($request->all());
-
-        $applicant->update([
+        $data = [
             'first_name' => $request->firstName,
             'middle_name' => $request->middleName,
             'last_name' => $request->lastName,
@@ -234,7 +234,6 @@ class applicantController extends Controller
             'g12_gwa1' => $request->g12gwa1,
             'g12_gwa2' => $request->g12gwa2,
 
-
             'first_course' => $request->firstCourse,
             'second_course' => $request->secondCourse,
             'third_course' => $request->thirdCourse,
@@ -248,13 +247,43 @@ class applicantController extends Controller
             'als_accreditation_equivalent_testing_date' => $request->alsTestingDate,
             'als_accreditation_equivalent_rating' => $request->alsRating,
             'als_accreditation_equivalent_remarks' => $request->alsRemarks,
+        ];
 
+        // TRACK CHANGES
+        $original = $applicant->only(array_keys($data));
+        $changedFields = [];
+        $previousValues = [];
 
-        ]);
+        foreach ($data as $key => $value) {
+            if (isset($original[$key]) && $original[$key] != $value) {
+                $changedFields[] = $key;
+                $previousValues[$key] = $original[$key];
+            }
+        }
 
+        // UPDATE DATE OF APPLICANT
+        $applicant->update($data);
+
+        // TRIGGER LOGS IF THERE IS A CHANGE OF DATA
+        if (!empty($changedFields)) {
+            $applicantName = ucwords(strtolower("{$original['first_name']} {$original['middle_name']} {$original['last_name']}"));
+
+            ActionLogs::create([
+                'action' => 'update',
+                'user_id' => Auth::id(),
+                'target_id' => $applicant->id,
+                'metadata' => json_encode([
+                    'changed_fields' => $changedFields,
+                    'previous_values' => $previousValues,
+                    'new_values' => $applicant->only($changedFields),
+                    'description' => "Updated applicant: \"$applicantName\""
+                ]),
+            ]);
+        }
 
         return redirect()->route('applicant.show', $applicant->id)->with('success', 'Applicant Updated');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -323,13 +352,28 @@ class applicantController extends Controller
             'exam_score' => $request->exam_score,
             'scored_by' => Auth::id(),
         ];
-        
+
         $changedFields = [];
 
         foreach ($newValues as $key => $value) {
             if ($applicant->$key != $value) {
                 $changedFields[] = $key;
             }
+        }
+
+        // ENCODING LOGS
+        if (!is_null($applicant['scored_by'] ) && !empty($changedFields)) {
+            ActionLogs::create([
+                'action' => 'rescore',
+                'user_id' => Auth::id(),
+                'target_id' => $applicant->id,
+                'metadata' => json_encode([
+                    'changed_fields' => $changedFields,
+                    'previous_values' => array_intersect_key($previousValues, array_flip($changedFields)),
+                    'new_values' => $applicant->only($changedFields),
+                    'description' => "Re-score Applicant: \"$applicantName\""
+                ]),
+            ]);
         }
 
 
@@ -342,20 +386,7 @@ class applicantController extends Controller
             'scored_by' => auth::id(),
         ]);
 
-        // ENCODING LOGS
-        if (!empty($changedFields)) {
-            ActionLogs::create([
-                'action' => 'score',
-                'user_id' => Auth::id(),
-                'target_id' => $applicant->id,
-                'metadata' => json_encode([
-                    'changed_fields' => $changedFields,
-                    'previous_values' => array_intersect_key($previousValues, array_flip($changedFields)),
-                    'new_values' => $applicant->only($changedFields),
-                    'description' => "Score Applicant: \"$applicantName\""
-                ]),
-            ]);
-        }
+        
         //dd($request->all());
 
 
