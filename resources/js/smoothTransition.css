@@ -1,9 +1,0 @@
-.course-list {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease-in-out;
-}
-
-.course-list.show {
-    max-height: 500px; /* Adjust this value as needed */
-}

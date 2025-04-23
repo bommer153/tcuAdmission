@@ -34,7 +34,18 @@ class applicantController extends Controller
         $athleteApplicant = applicant::where('athlete', '=', 'Yes')
                                         ->select('id', 'first_name' , 'middle_name', 'last_name',  
                                                     'first_course', 'second_course', 'third_course','exam_score')
-                                        ->get();
+                                        ->orderBy('exam_score','desc')
+                                        ->get()
+                                        ->map(function ($applicant) {
+                                            return [
+                                                'id' => $applicant->id,
+                                                'name' =>strtoupper(trim($applicant->last_name)) . ', ' . ucwords(strtolower(trim("{$applicant->first_name} {$applicant->middle_name}"))),
+                                                'first_course' => $applicant->first_course,
+                                                'second_course' => $applicant->second_course,
+                                                'third_course' => $applicant->third_course,
+                                                'exam_score' => $applicant->exam_score,
+                                            ];
+                                        });
         // dd($athleteApplicant);
 
         if (request("date")) {

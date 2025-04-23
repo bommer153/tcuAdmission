@@ -4,6 +4,9 @@ import { Head, router } from '@inertiajs/react';
 import { useEffect } from 'react';
 import React, { useState } from 'react';
 import '../../css/app.css';
+import * as XLSX from 'xlsx/xlsx.mjs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 export default function Dashboard(props, queryParams = null) {
 
@@ -30,6 +33,39 @@ export default function Dashboard(props, queryParams = null) {
         }));
     };
 
+    const handleExcel = () => {
+
+        const athleteWithoutId = props.athleteApplicant.map(({
+            id, name,
+            first_course, second_course, third_course, 
+            exam_score, ...rest }, index) => {
+
+            const NAME = name;
+            const FCOURSE = first_course;
+            const SCOURSE = second_course;
+            const TCOURSE = third_course;
+            const SCORE = exam_score;
+
+            return {
+                ...rest,
+                NO: index+1,
+                NAME: NAME,
+                'FIRST COURSE': FCOURSE,
+                'SECOND COURSE': SCOURSE,
+                'THIRD COURSE': TCOURSE,
+                SCORE: SCORE,
+            };
+        });
+
+
+        const wb = XLSX.utils.book_new(),
+            ws = XLSX.utils.json_to_sheet(athleteWithoutId);
+
+        XLSX.utils.book_append_sheet(wb, ws, "AthleteList");
+
+        XLSX.writeFile(wb, `Athlete-Admission-List(2025-2026).xlsx`);
+
+    };
 
     return (
         <AuthenticatedLayout
@@ -136,12 +172,19 @@ export default function Dashboard(props, queryParams = null) {
                             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8" id="ATHLETE">
                                 <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                                     <div className="p-6 text-gray-900 dark:text-gray-100">
+                                        {props.auth.user.role == 1 &&
+                                            <div>
+                                                <button className='hover:text-blue-500' onClick={handleExcel}>
+                                                    <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
+                                                </button>
+                                            </div>
+                                        }
                                         <div><b>TOTAL:</b> {props.athleteApplicant.length}</div>
                                         <table className="table-auto w-full">
                                             <thead>
                                                 <tr>
                                                     <th className="border-b border-gray-300 px-4 py-2 text-left">#</th>
-                                                    <th className="border-b border-gray-300 px-4 py-2 text-left">ID</th>
+                                                    {props.auth.user.role == 1 && <th className="border-b border-gray-300 px-4 py-2 text-left">ID</th>}
                                                     <th className="border-b border-gray-300 px-4 py-2 text-left">Name</th>
                                                     <th className="border-b border-gray-300 px-4 py-2 text-left">Course Preferences</th>
                                                     <th className="border-b border-gray-300 px-4 py-2 text-left">Score</th>
@@ -152,9 +195,9 @@ export default function Dashboard(props, queryParams = null) {
 
                                                     <tr key={index}>
                                                         <td className="border-b border-gray-700 px-2 py-0 text-gray-400">{index + 1}</td>
-                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400">{athlete.id}</td>
+                                                        {props.auth.user.role == 1 && <td className="border-b border-gray-700 px-2 py-0 text-gray-400">{athlete.id}</td>}
                                                         <td className="border-b border-gray-700 px-2 py-0 text-gray-400">
-                                                            {`${athlete.first_name} ${athlete.middle_name} ${athlete.last_name}`}
+                                                            {athlete.name}
                                                         </td>
                                                         <td className="border-b border-gray-700 px-2 py-0 text-gray-400 w-[400px]">
                                                             <button
