@@ -327,7 +327,7 @@ class PdfController extends Controller
                 'third_course as thirdChoice'
             )
             //   -where('status', '') // original code
-            ->whereNotNull('printed_by')
+            ->whereNotNull('scored_by')
             ->orderBy('overall', 'desc')
             ->get();
 
@@ -615,7 +615,7 @@ class PdfController extends Controller
                 'third_course as thirdChoice'
             )
             //   -where('status', '') // original code
-            ->whereNotNull('printed_by')
+            ->whereNotNull('scored_by')
             ->orderBy('overall', 'desc')
             ->take($count)
             ->get();
