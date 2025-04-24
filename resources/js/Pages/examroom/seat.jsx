@@ -428,8 +428,11 @@ export default function Seat({ errors: serverErrors, auth, examRooms, seat, exam
                                         <a href={route('pdf.examPermit', applicant.id)} target="_blank">
                                             <Button className="mt-2">Print Exam Permit</Button>
                                         </a>
-                                        <Button  onClick={() => removeSched(applicant.id)} className="mt-2 bg-red-500 hover:bg-gray-500 w-1/3">Remove Schedule</Button>
+                                        {auth.user.role == 1 && 
+                                            <Button  onClick={() => removeSched(applicant.id)} className="mt-2 bg-red-500 hover:bg-gray-500 w-1/3">Remove Schedule</Button>
+                                        }
                                         
+                            
                                     </div>
 
                                 </div>

@@ -16,4 +16,5 @@ export const ACTION_CLASS_MAP = {
     'reprint' : ' text-gray-600 bg-green-500 ',
     'rescore' :  ' text-white bg-[rgb(136,0,21)] ',
     'update'  : ' text-gray-600 bg-blue-300 ',
+    'rmv-schd': ' text-white bg-red-500 ',
 }

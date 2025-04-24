@@ -14,8 +14,8 @@ export default function Dashboard(props, queryParams = null) {
     const [activeTab, setActiveTab] = useState('MAIN');
     const [visibleRows, setVisibleRows] = useState({});
 
-
     queryParams = props.queryParams || {};
+    console.log(props.olivarez);
     const onChange = (date) => {
 
         queryParams['date'] = date;
@@ -37,7 +37,7 @@ export default function Dashboard(props, queryParams = null) {
 
         const athleteWithoutId = props.athleteApplicant.map(({
             id, name,
-            first_course, second_course, third_course, 
+            first_course, second_course, third_course,
             exam_score, ...rest }, index) => {
 
             const NAME = name;
@@ -48,7 +48,7 @@ export default function Dashboard(props, queryParams = null) {
 
             return {
                 ...rest,
-                NO: index+1,
+                NO: index + 1,
                 NAME: NAME,
                 'FIRST COURSE': FCOURSE,
                 'SECOND COURSE': SCOURSE,
@@ -75,7 +75,38 @@ export default function Dashboard(props, queryParams = null) {
         >
             <Head title="Dashboard" />
 
+            {/* <div className="bg-white dark:bg-gray-900 shadow mb-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex space-x-4">
 
+                    <div className="overflow-x-auto p-4">
+                        <table className="min-w-full bg-white rounded-xl shadow">
+                            <thead className="bg-gray-100 text-gray-700 text-sm uppercase text-left">
+                                <tr>
+                                    <th className="py-3 px-4">#</th>
+                                    <th className="py-3 px-4">Name</th>
+                                    <th className="py-3 px-4">Schedule</th>
+                                    <th className="py-3 px-4">Contact No.</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-gray-800 text-sm divide-y divide-gray-200">
+                                {props.olivarez.map((applicant, index) => (
+                                    <tr key={index}>
+                                        <td className="py-3 px-4">{index + 1}</td>
+                                        <td className="py-3 px-4">
+                                            {applicant.name}
+                                        </td>
+                                        <td className="py-3 px-4">
+                                            {applicant.schedule}
+                                        </td>
+                                        <td className="py-3 px-4">{applicant.contact_no}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div> */}
 
             <div className="py-4">
                 {
@@ -231,6 +262,8 @@ export default function Dashboard(props, queryParams = null) {
                                 </div>
                             </div>
                         )}
+
+
                     </>
 
                 }

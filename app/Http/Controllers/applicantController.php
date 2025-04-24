@@ -13,6 +13,7 @@ use App\Imports\ApplicantAls;
 use App\Exports\applicantFormat;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class applicantController extends Controller
 {
@@ -30,6 +31,20 @@ class applicantController extends Controller
         $totalFinish = applicant::join('barangays', 'barangays.barangay', '=', 'applicants.barangay')->whereNotNull('applicants.printed_by')->count();
         //$totalFinish = applicant::whereNotNull('printed_by')->count(); 
         //applicant::whereNotNull('finish_date')->count()
+
+        // SELECT * FROM `applicants` WHERE `senior_high_school` LIKE '%olivarez%';
+
+        // $olivarez = Applicant::whereRaw('LOWER(senior_high_school) LIKE ?', ['%olivarez%'])->orderBy('exam_time', 'desc')
+        //     ->get(['first_name', 'middle_name', 'last_name', 'exam_date', 'exam_time', 'exam_room_no', 'exam_seat_no', 'senior_high_school', 'contact_no'])
+        //     ->map(function ($item, $key) {
+        //         return [
+        //             'number' => $key + 1,
+        //             'name' => "{$item->first_name} {$item->middle_name} {$item->last_name}",
+        //             'schedule' => "{$item->exam_date} {$item->exam_time} Room {$item->exam_room_no} Seat {$item->exam_seat_no}",
+        //             'senior_high_school' => $item->senior_high_school,
+        //             'contact_no' => $item->contact_no,
+        //         ];
+        //     });
 
         $athleteApplicant = applicant::where('athlete', '=', 'Yes')
             ->select(
@@ -72,6 +87,7 @@ class applicantController extends Controller
             'totalFinish' => $totalFinish,
             'applicantTotal' => $applicantTotal,
             'athleteApplicant' => $athleteApplicant,
+            // 'olivarez' => $olivarez,
         ]);
     }
     public function index()
@@ -362,7 +378,7 @@ class applicantController extends Controller
         }
 
         // ENCODING LOGS
-        if (!is_null($applicant['scored_by'] ) && !empty($changedFields)) {
+        if (!is_null($applicant['scored_by']) && !empty($changedFields)) {
             ActionLogs::create([
                 'action' => 'rescore',
                 'user_id' => Auth::id(),
@@ -386,7 +402,7 @@ class applicantController extends Controller
             'scored_by' => auth::id(),
         ]);
 
-        
+
         //dd($request->all());
 
 
@@ -399,20 +415,58 @@ class applicantController extends Controller
         return Excel::download(new applicantFormat, 'freshmen.xlsx', Excel::XLSX);
     }
 
-    public function removeSched($applicant)
-    {
 
-        applicant::findOrFail($applicant)->update([
+
+    public function removeSched(Applicant $applicant)
+    {
+        $applicantName = ucwords(strtolower("{$applicant->first_name} {$applicant->middle_name} {$applicant->last_name}"));
+
+        $previousValues = $applicant->only([
+            'exam_time',
+            'exam_date',
+            'exam_room_no',
+            'exam_seat_no',
+            'printed_by',
+            'finish_date'
+        ]);
+
+        $newValues = [
             'exam_time' => null,
             'exam_date' => null,
             'exam_room_no' => null,
             'exam_seat_no' => null,
             'printed_by' => null,
             'finish_date' => null,
-        ]);
+        ];
+
+        $changedFields = [];
+        foreach ($newValues as $key => $value) {
+            if ($applicant->$key != $value) {
+                $changedFields[] = $key;
+            }
+        }
+
+        DB::transaction(function () use ($applicant, $applicantName, $previousValues, $newValues, $changedFields) {
+            if (!empty($changedFields)) {
+                ActionLogs::create([
+                    'action' => 'rmv-schd',
+                    'user_id' => Auth::id(),
+                    'target_id' => $applicant->id,
+                    'metadata' => json_encode([
+                        'changed_fields' => $changedFields,
+                        'previous_values' => $previousValues,
+                        'new_values' => collect($newValues)->only($changedFields),
+                        'description' => "Remove-Schedule of applicant: \"{$applicantName}\""
+                    ]),
+                ]);
+            }
+
+            $applicant->update($newValues);
+        });
 
         return redirect()->back()->with('success', 'Schedule Removed');
     }
+
 
     public function filterDate()
     {
