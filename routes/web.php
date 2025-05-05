@@ -36,12 +36,16 @@ Route::middleware('auth')->group(function () {
     //Logs
     Route::get('/action-logs', [ActionLogsController::class,'index'])->name('actionLogs.index');
     
+    
 
     Route::resource('applicant', applicantController::class);
     Route::put('applicant/updateRemarks/{applicant}', [applicantController::class,'updateRemarks'])->name('applicant.updateRemarks');
     Route::put('applicant/updateAthlete/{applicant}', [applicantController::class,'updateAthlete'])->name('applicant.updateAthlete');
     Route::put('applicant/score/{applicant}', [applicantController::class,'updateScore'])->name('applicant.updateScore');
     Route::put('applicant/removesched/{applicant}', [applicantController::class,'removeSched'])->name('applicant.removeSched');
+
+    // Examined
+    Route::get('/examined', [applicantController::class, 'examinedResult'])->name('examined.result');
 
     Route::get('/exam-permit/{applicant}', [PdfController::class, 'examPermit'])->name('pdf.examPermit');
     Route::get('/report', [PdfController::class, 'index'])->name('reports.index');

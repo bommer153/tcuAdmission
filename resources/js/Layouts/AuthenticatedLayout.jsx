@@ -33,6 +33,14 @@ export default function Authenticated({ auth, header, children }) {
                             </div>
 
 
+                            {(auth.user.role === '3' || auth.user.role === '1') && (
+                                <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                    <NavLink href={route('examined.result')} active={route().current('examined.result')}>
+                                        {auth.user.role === '1'? 'Examined' : "Your Examined"}
+                                    </NavLink>
+                                </div>
+                            )}
+
                             {(auth.user.role === '4' || auth.user.role === '1') && (
                                 <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                     <NavLink href={route('examroom.index')} active={route().current('examroom.index')}>
