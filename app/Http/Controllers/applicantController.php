@@ -485,7 +485,8 @@ class applicantController extends Controller
     public function getApplicantApi()
     {
         return response()->json([
-            'applicants' => applicant::get()->take(10),
+            'applicants' => applicant::select('first_name', 'middle_name', 'last_name')->take(10)->get(),
         ]);
     }
+
 }
