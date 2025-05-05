@@ -489,4 +489,47 @@ class applicantController extends Controller
         ]);
     }
 
+    public function examinedResult()
+    {
+        $user = Auth::user();
+        $curr_user = $user->id;
+        $curr_role = $user->role;
+
+        // Base query
+        $query = DB::table('applicants')
+            ->join('users', 'users.id', '=', 'applicants.scored_by')
+            ->select(
+                DB::raw("CONCAT(applicants.first_name, ' ', applicants.middle_name, ' ', applicants.last_name) as name"),
+                DB::raw("(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2))) * 0.4 as gwascore"),
+                DB::raw("(((exam_score / 150) * 100 * 0.5) + 50) * 0.6 as final_exam_score"),
+                DB::raw("(((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6) as overall"),
+                'exam_score',
+                'first_course as firstChoice',
+                'second_course as secondChoice',
+                'third_course as thirdChoice',
+                'exam_date',
+                'exam_time',
+                'exam_room_no',
+                'exam_seat_no',
+                'contact_no',
+                'g11_gwa1',
+                'g11_gwa2',
+                'g12_gwa1',
+                'g12_gwa2',
+                'users.name as scorer_name'
+            )
+            ->whereNotNull('applicants.scored_by');
+
+        // Apply additional filter if role is 3
+        if ($curr_role == 3) {
+            $query->where('applicants.scored_by', $curr_user);
+        }
+
+        $applicantResultExam = $query->orderBy('overall', 'desc')->get();
+
+        return inertia('examined/show', [
+            'applicantResultExam' => $applicantResultExam,
+        ]);
+    }
+
 }
