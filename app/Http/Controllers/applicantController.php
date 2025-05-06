@@ -6,6 +6,9 @@ use App\Models\ActionLogs;
 use App\Models\applicant;
 use App\Models\courses;
 use App\Models\barangay;
+use App\Models\ExamDate;
+use App\Models\ExamRoom;
+use App\Models\ExamTime;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Imports\ApplicantImport;
@@ -14,6 +17,7 @@ use App\Exports\applicantFormat;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 
 class applicantController extends Controller
 {
@@ -489,8 +493,13 @@ class applicantController extends Controller
         ]);
     }
 
-    public function examinedResult()
+    public function examinedResult(Request $request)
     {
+
+        $examDate = ExamDate::get();
+        $examTime = ExamTime::get();
+        $examRooms = ExamRoom::get();
+
         $user = Auth::user();
         $curr_user = $user->id;
         $curr_role = $user->role;
@@ -516,6 +525,7 @@ class applicantController extends Controller
                 'g11_gwa2',
                 'g12_gwa1',
                 'g12_gwa2',
+                'senior_high_school',
                 'users.name as scorer_name'
             )
             ->whereNotNull('applicants.scored_by');
@@ -525,9 +535,21 @@ class applicantController extends Controller
             $query->where('applicants.scored_by', $curr_user);
         }
 
-        $applicantResultExam = $query->orderBy('overall', 'desc')->get();
+        $query->when(request('exam_date'), fn($q) => $q->where('exam_date', request('exam_date')))
+            ->when(request('exam_time'), fn($q) => $q->where('exam_time', request('exam_time')))
+            ->when(request('exam_room_no'), fn($q) => $q->where('exam_room_no', request('exam_room_no')));
+
+
+        $applicantResultExam = $query
+            ->orderByRaw("LEFT(exam_seat_no, 1) ASC")
+            ->orderByRaw("CAST(SUBSTRING(exam_seat_no, 2) AS UNSIGNED) DESC")
+            ->get();
 
         return inertia('examined/show', [
+            'queryParams' => request()->query() ?: null,
+            'examDates' => $examDate,
+            'examTimes' => $examTime,
+            'examRooms' => $examRooms,
             'applicantResultExam' => $applicantResultExam,
         ]);
     }

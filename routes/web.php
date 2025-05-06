@@ -43,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::put('applicant/updateAthlete/{applicant}', [applicantController::class,'updateAthlete'])->name('applicant.updateAthlete');
     Route::put('applicant/score/{applicant}', [applicantController::class,'updateScore'])->name('applicant.updateScore');
     Route::put('applicant/removesched/{applicant}', [applicantController::class,'removeSched'])->name('applicant.removeSched');
-
+    
     // Examined
     Route::get('/examined', [applicantController::class, 'examinedResult'])->name('examined.result');
 
