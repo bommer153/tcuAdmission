@@ -50,29 +50,43 @@ class applicantController extends Controller
         //         ];
         //     });
 
-        $athleteApplicant = applicant::where('athlete', '=', 'Yes')
-            ->select(
-                'id',
-                'first_name',
-                'middle_name',
-                'last_name',
-                'first_course',
-                'second_course',
-                'third_course',
-                'exam_score'
-            )
-            ->orderBy('exam_score', 'desc')
-            ->get()
-            ->map(function ($applicant) {
-                return [
-                    'id' => $applicant->id,
-                    'name' => strtoupper(trim($applicant->last_name)) . ', ' . ucwords(strtolower(trim("{$applicant->first_name} {$applicant->middle_name}"))),
-                    'first_course' => $applicant->first_course,
-                    'second_course' => $applicant->second_course,
-                    'third_course' => $applicant->third_course,
-                    'exam_score' => $applicant->exam_score,
-                ];
-            });
+        $athleteApplicant = DB::table('applicants')
+                            ->where('athlete', 'Yes')
+                            ->select(
+                        'id',
+                                'exam_score',
+                                'first_course as firstChoice',
+                                'second_course as secondChoice',
+                                'third_course as thirdChoice',
+                                'g11_gwa1 as g11gwa1',
+                                'g11_gwa2 as g11gwa2',
+                                'g12_gwa1 as g12gwa1',
+                                'g12_gwa2 as g12gwa2',
+                                DB::raw("
+                                    CONCAT(
+                                        UPPER(TRIM(last_name)), ', ',
+                                        CONCAT(
+                                            UPPER(LEFT(TRIM(first_name), 1)),
+                                            LOWER(SUBSTRING(TRIM(first_name), 2)),
+                                            ' ',
+                                            UPPER(LEFT(TRIM(middle_name), 1)),
+                                            LOWER(SUBSTRING(TRIM(middle_name), 2))
+                                        )
+                                    ) as name
+                                "),
+                                DB::raw("ROUND(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2)) * 0.4, 2) as gwascore"),
+                                DB::raw("ROUND((((exam_score / 150) * 100 * 0.5) + 50) * 0.6, 2) as final_exam_score"),
+                                DB::raw("ROUND(
+                                    (
+                                        (((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4)
+                                        + 
+                                        (((exam_score / 150) * 100 * 0.5 + 50) * 0.6)
+                                    ),
+                                2) as overall"),
+                            )
+                            ->orderByDesc('overall')
+                            ->get();
+
         // dd($athleteApplicant);
 
         if (request("date")) {

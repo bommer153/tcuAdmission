@@ -28,7 +28,10 @@ Route::get('/', function () {
 
 Route::get('/api/getApplicant', [ApplicantController::class, 'getApplicantApi'])->name('api.getApplicantApi');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(
+    'auth', 
+                'restrict.ip' 
+    )->group(function () {
 
     Route::get('/dashboard', [ApplicantController::class, 'dashboard'])->name('dashboard');    
     Route::get('/api/filterDate', [ApplicantController::class, 'filterDate'])->name('api.filterDate');

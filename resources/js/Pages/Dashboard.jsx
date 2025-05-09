@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 export default function Dashboard(props, queryParams = null) {
-
+    
     const [myDates, setMyDates] = useState("");
     const [activeTab, setActiveTab] = useState('MAIN');
     const [visibleRows, setVisibleRows] = useState({});
@@ -37,23 +37,42 @@ export default function Dashboard(props, queryParams = null) {
 
         const athleteWithoutId = props.athleteApplicant.map(({
             id, name,
-            first_course, second_course, third_course,
-            exam_score, ...rest }, index) => {
+            firstChoice, secondChoice, thirdChoice,
+            exam_score, overall, final_exam_score, gwascore,
+            g11gwa1, g11gwa2, g12gwa1, g12gwa2, ...rest }, index) => {
 
             const NAME = name;
-            const FCOURSE = first_course;
-            const SCOURSE = second_course;
-            const TCOURSE = third_course;
+            const FCOURSE = firstChoice;
+            const SCOURSE = secondChoice;
+            const TCOURSE = thirdChoice;
             const SCORE = exam_score;
+            const OVERALL = overall;
+            const EXAM_SCORE = final_exam_score;
+            const GWA = gwascore;
+            const G11GWA1 = g11gwa1;
+            const G11GWA2 = g11gwa2;
+            const G12GWA1 = g12gwa1;
+            const G12GWA2 = g12gwa2;
+            
 
             return {
                 ...rest,
                 NO: index + 1,
                 NAME: NAME,
+
+                SCORE: SCORE,
+                'OVERALL': OVERALL,
+                'GWA (40%)': GWA,
+                'EXAM (60%)': EXAM_SCORE,
+                'G11 GWA 1': G11GWA1,
+                'G11 GWA 2': G11GWA2,
+                'G12 GWA 1': G12GWA1,
+                'G12 GWA 2': G12GWA2,
+
                 'FIRST COURSE': FCOURSE,
                 'SECOND COURSE': SCOURSE,
                 'THIRD COURSE': TCOURSE,
-                SCORE: SCORE,
+                
             };
         });
 
@@ -218,7 +237,15 @@ export default function Dashboard(props, queryParams = null) {
                                                     {props.auth.user.role == 1 && <th className="border-b border-gray-300 px-4 py-2 text-left">ID</th>}
                                                     <th className="border-b border-gray-300 px-4 py-2 text-left">Name</th>
                                                     <th className="border-b border-gray-300 px-4 py-2 text-left">Course Preferences</th>
-                                                    <th className="border-b border-gray-300 px-4 py-2 text-left">Score</th>
+
+                                                    <th className="border-b border-gray-300 px-4 py-2 text-left w-[80px] text-[9px]">Overall</th>
+                                                    <th className="border-b border-gray-300 px-4 py-2 text-left w-[80px] text-[9px]">Exam (60%)</th>
+                                                    <th className="border-b border-gray-300 px-4 py-2 text-left w-[80px] text-[9px]">GWA (40%)</th>
+
+                                                    <th className="border-b border-gray-300 px-4 py-2 text-left w-[80px] text-[9px]">G11 GWA 1</th>
+                                                    <th className="border-b border-gray-300 px-4 py-2 text-left w-[80px] text-[9px]">G11 GWA 2</th>
+                                                    <th className="border-b border-gray-300 px-4 py-2 text-left w-[80px] text-[9px]">G12 GWA 1</th>
+                                                    <th className="border-b border-gray-300 px-4 py-2 text-left w-[80px] text-[9px]">G12 GWA 2</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -227,10 +254,10 @@ export default function Dashboard(props, queryParams = null) {
                                                     <tr key={index}>
                                                         <td className="border-b border-gray-700 px-2 py-0 text-gray-400">{index + 1}</td>
                                                         {props.auth.user.role == 1 && <td className="border-b border-gray-700 px-2 py-0 text-gray-400">{athlete.id}</td>}
-                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400">
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400  text-[12px]">
                                                             {athlete.name}
                                                         </td>
-                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 w-[400px]">
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 w-[250px]">
                                                             <button
                                                                 onClick={() => toggleRowVisibility(index)} // Toggle visibility for the entire row
                                                                 className="text-blue-500 hover:underline text-sm"
@@ -240,16 +267,23 @@ export default function Dashboard(props, queryParams = null) {
 
                                                             {/* Only show the row's contents when the row is visible */}
                                                             {visibleRows[index] && (
-                                                                <div className="mt-2">
+                                                                <div className="mt-2 text-[12px]">
                                                                     <ol className={`course-list ${visibleRows[index] ? 'show' : ''} list-decimal list-inside mt-1`}>
-                                                                        {athlete.first_course && <li>{athlete.first_course}</li>}
-                                                                        {athlete.second_course && <li>{athlete.second_course}</li>}
-                                                                        {athlete.third_course && <li>{athlete.third_course}</li>}
+                                                                        {athlete.firstChoice && <li>{athlete.firstChoice}</li>}
+                                                                        {athlete.secondChoice && <li>{athlete.secondChoice}</li>}
+                                                                        {athlete.thirdChoice && <li>{athlete.thirdChoice}</li>}
                                                                     </ol>
                                                                 </div>
                                                             )}
                                                         </td>
-                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400">{athlete.exam_score}</td>
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.overall}</td>
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">({athlete.final_exam_score}) {athlete.exam_score}</td>
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.gwascore}</td>
+
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.g11gwa1}</td>
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.g11gwa2}</td>
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.g12gwa1}</td>
+                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.g12gwa2}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
