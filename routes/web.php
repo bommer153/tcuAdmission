@@ -30,7 +30,7 @@ Route::get('/api/getApplicant', [ApplicantController::class, 'getApplicantApi'])
 
 Route::middleware(
     'auth', 
-                'restrict.ip' 
+                // 'restrict.ip' 
     )->group(function () {
 
     Route::get('/dashboard', [ApplicantController::class, 'dashboard'])->name('dashboard');    
