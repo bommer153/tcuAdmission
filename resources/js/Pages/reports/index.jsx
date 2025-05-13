@@ -33,6 +33,9 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         XLSX.writeFile(wb, `AdmissionTCU(2025-2026).xlsx`);
     };
 
+    const examScoreConflictCount = applicantResultExam.filter(applicant => applicant.exam_score <= 0).length;
+    const gwaScoreConflictCount = applicantResultExam.filter(applicant => applicant.gwascore <= 30).length;
+
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -146,14 +149,19 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
             <div className=" p-5 px-20">
 
                 <div>
-                    <button 
+                    <button
                         onClick={handleExcel}
                         className='text-white'
                     >
                         <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
                     </button>
                 </div>
+                <div className='bg-white pl-2 text-[12px]'>
+                    <p>Aplicants with 0 Exam Score: <u>&nbsp;&nbsp;{examScoreConflictCount}&nbsp;&nbsp;</u> </p>
+                    <p>Conflict GWA: <u>&nbsp;&nbsp;{gwaScoreConflictCount}&nbsp;&nbsp;</u></p>
+                </div>
                 <table cellspacing="0" cellpadding="4" className='bg-white'>
+
                     <tr>
                         <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>#</th>
                         <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>Name</th>
@@ -168,24 +176,25 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
 
                     {applicantResultExam.map((applicant, index) => (
+
                         <tr key={applicant.id}>
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '8px' }}>{index + 1}</th>
                             <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.name}</th>
                             <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
-                            
+
                             {applicant.exam_score > 0 ?
                                 <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
                                 :
                                 <th style={{ width: '5%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }} title="0 EXAM GRADE">({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
                             }
-                            {applicant.gwascore >= 30 ? 
+                            {applicant.gwascore >= 30 ?
                                 <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.gwascore).toFixed(2)}</th>
                                 :
                                 <th style={{ width: '10%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }}
                                     title="POSSIBLE GWA CONFLICT"
                                 >{Number(applicant.gwascore).toFixed(2)}</th>
                             }
-                            
+
                             <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.firstChoice}</th>
                             <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.secondChoice}</th>
                             <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.thirdChoice}</th>

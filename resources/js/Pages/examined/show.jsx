@@ -35,6 +35,8 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         router.get(route('examined.result'), queryParams);
     }
 
+    const examScoreConflictCount = applicantResultExam.filter(applicant => applicant.exam_score <= 0).length;
+
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -106,13 +108,18 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
             </div>
 
             <div className=" p-5 px-20">
-                <div className='bg-white'>
+                <div className='bg-white pl-2'>
                     {queryParams.exam_date && (<> Date: <u>{queryParams.exam_date}</u> </>)}
                     {queryParams.exam_time && (<> Time: <u>{queryParams.exam_time}</u> </>)}
                     {queryParams.exam_room_no && (<> Room: <u>{queryParams.exam_room_no}</u> </>)}
-                    COUNT: <u>{trackCount}</u>
+                    Count: <u>{trackCount}</u>
 
                 </div>
+                {examScoreConflictCount > 0 &&
+                    <div className='bg-white pl-2'>
+                        <p>Aplicants with 0 Exam Score: <u className='bg-red-500'>&nbsp;&nbsp;{examScoreConflictCount}&nbsp;&nbsp;</u> </p>
+                    </div>
+                }
 
                 <table cellspacing="0" cellpadding="4" className='bg-white'>
                     <tr>
