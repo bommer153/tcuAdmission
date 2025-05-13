@@ -34,7 +34,7 @@ export default function ActionLogs({ auth, logs }) {
                                             <th className="p-2 border">Timestamp</th>
                                             <th className="p-2 border">User</th>
                                             <th className="p-2 border">Action</th>
-                                            <th className="p-2 border">Applicant ID</th>
+                                            <th className="p-2 border w-[20px] text-[10px]">Applicant ID</th>
                                             <th className="p-2 border">Changed Fields</th>
                                             <th className="p-2 border">Description</th>
                                         </tr>
@@ -51,13 +51,13 @@ export default function ActionLogs({ auth, logs }) {
                                             return (
                                                 <tr key={log.id} className="text-sm text-gray-400">
                                                     <td className="p-0.5 border-b border-gray-300">{new Date(log.created_at).toLocaleString()}</td>
-                                                    <td className="p-0.5 border-b border-gray-300">
+                                                    <td className="p-0.5 border-b border-gray-300 text-[12px]">
                                                         {log.user_info?.name || 'System'}
                                                         <span className={"text-[9px] rounded p-1 ml-1" + USER_STATUS_CLASS_MAP[log.user_info.role]}>{USER_STATUS_TEXT_MAP[log.user_info.role]}</span>
                                                     </td>
                                                     <td className="p-0.5 border-b border-gray-300"> <span className={"p-1 rounded text-[11px]" + ACTION_CLASS_MAP[log.action]}>{log.action}</span></td>
-                                                    <td className="p-0.5 border-b border-gray-300">{log.target_id}</td>
-                                                    <td className="p-0.5 border-b border-gray-300">
+                                                    <td className="p-0.5 border-b border-gray-300 w-[20px]">{log.target_id}</td>
+                                                    <td className="p-0.5 border-b border-gray-300 w-[350px] text-[12px]">
                                                         {meta.changed_fields?.length ? (
                                                             <ul className="list-disc list-inside">
                                                                 {meta.changed_fields.map((field, i) => (
@@ -72,7 +72,7 @@ export default function ActionLogs({ auth, logs }) {
                                                             <em>—</em>
                                                         )}
                                                     </td>
-                                                    <td className="p-0.5 border-b border-gray-300">{meta.description || '—'}</td>
+                                                    <td className="p-0.5 border-b border-gray-300 w-[350px]">{meta.description || '—'}</td>
                                                 </tr>
                                             );
                                         })}

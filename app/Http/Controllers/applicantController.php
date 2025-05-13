@@ -376,27 +376,33 @@ class applicantController extends Controller
 
     public function updateScore(applicant $applicant, Request $request)
     {
+        // 1. Validate request early
+        $request->validate([
+            'exam_score' => 'required'
+        ]);
 
-        $app = applicant::findOrFail($applicant->id);
-        $applicantName = ucwords(strtolower("$app->first_name $app->middle_name $app->last_name"));
+        // 2. Format full name
+        $applicantName = ucwords(strtolower("{$applicant->first_name} {$applicant->middle_name} {$applicant->last_name}"));
 
+        // 3. Store previous values
         $previousValues = $applicant->only(['exam_score', 'scored_by']);
 
+        // 4. Prepare new values
         $newValues = [
             'exam_score' => $request->exam_score,
             'scored_by' => Auth::id(),
         ];
 
+        // 5. Determine changed fields
         $changedFields = [];
-
         foreach ($newValues as $key => $value) {
-            if ($applicant->$key != $value) {
+            if ((string) $applicant->$key !== (string) $value) {
                 $changedFields[] = $key;
             }
         }
 
-        // ENCODING LOGS
-        if (!is_null($applicant['scored_by']) && !empty($changedFields)) {
+        // 6. Log only if previously scored and values changed
+        if (!is_null($applicant->scored_by) && !empty($changedFields)) {
             ActionLogs::create([
                 'action' => 'rescore',
                 'user_id' => Auth::id(),
@@ -404,29 +410,19 @@ class applicantController extends Controller
                 'metadata' => json_encode([
                     'changed_fields' => $changedFields,
                     'previous_values' => array_intersect_key($previousValues, array_flip($changedFields)),
-                    'new_values' => $applicant->only($changedFields),
-                    'description' => "Re-score Applicant: \"$applicantName\""
+                    'new_values' => array_intersect_key($newValues, array_flip($changedFields)),
+                    'description' => "Re-score Applicant: \"{$applicantName}\""
                 ]),
             ]);
         }
 
+        // 7. Update applicant
+        $applicant->update($newValues);
 
-        $request->validate([
-            'exam_score' => 'required'
-        ]);
-
-        $applicant->update([
-            'exam_score' => $request->exam_score,
-            'scored_by' => auth::id(),
-        ]);
-
-
-        //dd($request->all());
-
-
+        // 8. Redirect with success
         return redirect()->back()->with('success', 'Score Updated');
-
     }
+
 
     public function downloadExcel()
     {
