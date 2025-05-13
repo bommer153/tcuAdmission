@@ -289,11 +289,12 @@ class applicantController extends Controller
         $previousValues = [];
 
         foreach ($data as $key => $value) {
-            if (isset($original[$key]) && $original[$key] != $value) {
+            if (isset($original[$key]) && (string) $original[$key] !== (string) $value) {
                 $changedFields[] = $key;
                 $previousValues[$key] = $original[$key];
             }
         }
+        
 
         // UPDATE DATE OF APPLICANT
         $applicant->update($data);
