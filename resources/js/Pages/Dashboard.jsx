@@ -276,7 +276,11 @@ export default function Dashboard(props, queryParams = null) {
                                                                 </div>
                                                             )}
                                                         </td>
-                                                        <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.overall}</td>
+                                                        {athlete.overall >= 70 ? 
+                                                            <td className="border-b border-gray-700 bg-green-800 px-2 py-0 text-gray-200 text-[11px]">{athlete.overall}</td>
+                                                            :
+                                                            <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.overall}</td>
+                                                        }
                                                         <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">({athlete.final_exam_score}) {athlete.exam_score}</td>
                                                         <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.gwascore}</td>
 

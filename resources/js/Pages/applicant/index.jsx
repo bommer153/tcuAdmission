@@ -388,7 +388,7 @@ export default function index(props, queryParams = null) {
                     closeable={true}
                     onClose={closeModal}
                     width="sm:max-w-5xl"
-                    height="" // Custom height
+                    height="h-auto" // Custom height
                 >
                     <div className="max-w-7xl mx-auto lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -466,10 +466,12 @@ export default function index(props, queryParams = null) {
 
                                 <div className="grid grid-cols-2">
                                     <div>
-                                        <a href={route('applicant.show', 1)} target="_blank" className="hover:underline mb-5">
+                                        <a href={route('applicant.show', 1)} target="_blank" className="bg-blue-600 text-white rounded p-2 hover:bg-green-600 mb-8">
                                             Edit Applicant
                                         </a>
-                                        <h1><span className="font-bold">First Name :</span> {remarksData.first_name}</h1>
+                                        {remarksData.image_captured && <img src={"storage/snap/"+remarksData.image_captured} alt="applicant image" />}
+                                        
+                                        <h1 className='mt-10'><span className="font-bold">First Name :</span> {remarksData.first_name}</h1>
                                         <h1><span className="font-bold">Middle Name :</span> {remarksData.middle_name}</h1>
                                         <h1><span className="font-bold">Last Name :</span> {remarksData.last_name} </h1>
                                         <hr className="mb-2 mt-2 w-4/5"></hr>
