@@ -469,8 +469,7 @@ export default function index(props, queryParams = null) {
                                         <a href={route('applicant.show', 1)} target="_blank" className="bg-blue-600 text-white rounded p-2 hover:bg-green-600 mb-8">
                                             Edit Applicant
                                         </a>
-                                        {remarksData.image_captured && <img src={"storage/snap/"+remarksData.image_captured} alt="applicant image" className='m-4'/>}
-                                        
+                                        {remarksData.image_captured && <img src={"storage/snap/"+remarksData.image_captured} alt="applicant image" className='h-[250px] w-[400px] bg-white'/>}
                                         <h1 className='mt-10'><span className="font-bold">First Name :</span> {remarksData.first_name}</h1>
                                         <h1><span className="font-bold">Middle Name :</span> {remarksData.middle_name}</h1>
                                         <h1><span className="font-bold">Last Name :</span> {remarksData.last_name} </h1>
