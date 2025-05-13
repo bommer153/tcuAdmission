@@ -143,7 +143,11 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                             <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.contact_no}</th>
 
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
-                            <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
+                            {applicant.exam_score > 0 ? 
+                                <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
+                                :
+                                <th style={{ width: '5%', border: '1px solid black', background: 'red',  textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
+                            }
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.gwascore).toFixed(2)}</th>
 
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.g11_gwa1}</th>
