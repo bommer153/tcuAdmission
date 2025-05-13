@@ -172,8 +172,20 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '8px' }}>{index + 1}</th>
                             <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.name}</th>
                             <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
-                            <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
-                            <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.gwascore).toFixed(2)}</th>
+                            
+                            {applicant.exam_score > 0 ?
+                                <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
+                                :
+                                <th style={{ width: '5%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }} title="0 EXAM GRADE">({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
+                            }
+                            {applicant.gwascore >= 30 ? 
+                                <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.gwascore).toFixed(2)}</th>
+                                :
+                                <th style={{ width: '10%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }}
+                                    title="POSSIBLE GWA CONFLICT"
+                                >{Number(applicant.gwascore).toFixed(2)}</th>
+                            }
+                            
                             <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.firstChoice}</th>
                             <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.secondChoice}</th>
                             <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>{applicant.thirdChoice}</th>
