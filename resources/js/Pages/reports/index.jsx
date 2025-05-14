@@ -177,11 +177,11 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                         <FontAwesomeIcon icon={faVolleyballBall} /> Athlete :
                     </button>
                     {listAthleteState === "ON" ? (
-                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md" 
-                         style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md"
+                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
                     ) : (
                         <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md"
-                         style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
                     )}
                 </div>
                 <div className='bg-white pl-2 text-[12px]'>
@@ -210,7 +210,9 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                             className={applicant.athlete === 'Yes' ? 'bg-yellow-300' : ''}
                         >
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '8px' }}>{index + 1}</th>
-                            <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.name}</th>
+                            <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.name} {
+                                applicant.applicantType == "ALS" && <span className='p-1 bg-green-300 rounded'>ALS</span>}
+                            </th>
                             <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
 
                             {applicant.exam_score > 0 ?
