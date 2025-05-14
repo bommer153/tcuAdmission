@@ -9,10 +9,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 export default function Dashboard(props, queryParams = null) {
-    
+
     const [myDates, setMyDates] = useState("");
     const [activeTab, setActiveTab] = useState('MAIN');
     const [visibleRows, setVisibleRows] = useState({});
+
+    const [listAthleteState, setListAthleteState] = useState('ON');
+    const [currentList, setCurrentList] = useState(props.athleteApplicant);
 
     queryParams = props.queryParams || {};
     console.log(props.olivarez);
@@ -35,7 +38,7 @@ export default function Dashboard(props, queryParams = null) {
 
     const handleExcel = () => {
 
-        const athleteWithoutId = props.athleteApplicant.map(({
+        const athleteWithoutId = currentList.map(({
             id, name,
             firstChoice, secondChoice, thirdChoice,
             exam_score, overall, final_exam_score, gwascore,
@@ -53,7 +56,7 @@ export default function Dashboard(props, queryParams = null) {
             const G11GWA2 = g11gwa2;
             const G12GWA1 = g12gwa1;
             const G12GWA2 = g12gwa2;
-            
+
 
             return {
                 ...rest,
@@ -72,7 +75,7 @@ export default function Dashboard(props, queryParams = null) {
                 'FIRST COURSE': FCOURSE,
                 'SECOND COURSE': SCOURSE,
                 'THIRD COURSE': TCOURSE,
-                
+
             };
         });
 
@@ -86,6 +89,16 @@ export default function Dashboard(props, queryParams = null) {
 
     };
 
+    const handleAthlete = () => {
+        if (listAthleteState === 'ON') {
+            setListAthleteState('OFF');
+            setCurrentList(props.athleteApplicant.filter(applicant => applicant.overall >= 70));
+        } else {
+            setListAthleteState('ON');
+            setCurrentList(props.athleteApplicant);
+        }
+    };
+
     return (
         <AuthenticatedLayout
             auth={props.auth}
@@ -93,39 +106,6 @@ export default function Dashboard(props, queryParams = null) {
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Dashboard</h2>}
         >
             <Head title="Dashboard" />
-
-            {/* <div className="bg-white dark:bg-gray-900 shadow mb-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex space-x-4">
-
-                    <div className="overflow-x-auto p-4">
-                        <table className="min-w-full bg-white rounded-xl shadow">
-                            <thead className="bg-gray-100 text-gray-700 text-sm uppercase text-left">
-                                <tr>
-                                    <th className="py-3 px-4">#</th>
-                                    <th className="py-3 px-4">Name</th>
-                                    <th className="py-3 px-4">Schedule</th>
-                                    <th className="py-3 px-4">Contact No.</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-gray-800 text-sm divide-y divide-gray-200">
-                                {props.olivarez.map((applicant, index) => (
-                                    <tr key={index}>
-                                        <td className="py-3 px-4">{index + 1}</td>
-                                        <td className="py-3 px-4">
-                                            {applicant.name}
-                                        </td>
-                                        <td className="py-3 px-4">
-                                            {applicant.schedule}
-                                        </td>
-                                        <td className="py-3 px-4">{applicant.contact_no}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div> */}
 
             <div className="py-4">
                 {
@@ -227,9 +207,22 @@ export default function Dashboard(props, queryParams = null) {
                                                 <button className='hover:text-blue-500' onClick={handleExcel}>
                                                     <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
                                                 </button>
+                                                <button
+                                                    onClick={handleAthlete}
+                                                    className='ml-4 text-white hover:underline'
+                                                >
+                                                    pass :
+                                                </button>
+                                                {listAthleteState === "ON" ? (
+                                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md"
+                                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                                                ) : (
+                                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md"
+                                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                                                )}
                                             </div>
                                         }
-                                        <div><b>TOTAL:</b> {props.athleteApplicant.length}</div>
+                                        <div><b>TOTAL:</b> {currentList.length}</div>
                                         <table className="table-auto w-full">
                                             <thead>
                                                 <tr>
@@ -249,7 +242,7 @@ export default function Dashboard(props, queryParams = null) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {props.athleteApplicant.map((athlete, index) => (
+                                                {currentList.map((athlete, index) => (
 
                                                     <tr key={index}>
                                                         <td className="border-b border-gray-700 px-2 py-0 text-gray-400">{index + 1}</td>
@@ -276,7 +269,7 @@ export default function Dashboard(props, queryParams = null) {
                                                                 </div>
                                                             )}
                                                         </td>
-                                                        {athlete.overall >= 70 ? 
+                                                        {athlete.overall >= 70 ?
                                                             <td className="border-b border-gray-700 bg-green-800 px-2 py-0 text-gray-200 text-[11px]">{athlete.overall}</td>
                                                             :
                                                             <td className="border-b border-gray-700 px-2 py-0 text-gray-400 text-[11px]">{athlete.overall}</td>
