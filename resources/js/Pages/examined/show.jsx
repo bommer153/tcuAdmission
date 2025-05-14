@@ -36,6 +36,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     }
 
     const examScoreConflictCount = applicantResultExam.filter(applicant => applicant.exam_score <= 0).length;
+    const gwaScoreConflictCount = applicantResultExam.filter(applicant => applicant.gwascore <= 30).length;
 
     return (
         <AuthenticatedLayout
@@ -115,11 +116,10 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                     Count: <u>{trackCount}</u>
 
                 </div>
-                {examScoreConflictCount > 0 &&
-                    <div className='bg-white pl-2'>
-                        <p>Aplicants with 0 Exam Score: <u className='bg-red-500'>&nbsp;&nbsp;{examScoreConflictCount}&nbsp;&nbsp;</u> </p>
-                    </div>
-                }
+                <div className='bg-white pl-2 text-[12px]'>
+                    <p>Aplicants with 0 Exam Score: <u>&nbsp;&nbsp;{examScoreConflictCount}&nbsp;&nbsp;</u> </p>
+                    <p>Possible Conflict at GWA: <u>&nbsp;&nbsp;{gwaScoreConflictCount}&nbsp;&nbsp;</u></p>
+                </div>
 
                 <table cellspacing="0" cellpadding="4" className='bg-white'>
                     <tr>
@@ -155,8 +155,13 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                                 :
                                 <th style={{ width: '5%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }} title="0 EXAM GRADE">({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
                             }
-                            <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.gwascore).toFixed(2)}</th>
-
+                            {applicant.gwascore >= 30 ?
+                                <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.gwascore).toFixed(2)}</th>
+                                :
+                                <th style={{ width: '10%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }}
+                                    title="POSSIBLE GWA CONFLICT"
+                                >{Number(applicant.gwascore).toFixed(2)}</th>
+                            }
 
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.g11_gwa1}</th>
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.g11_gwa2}</th>

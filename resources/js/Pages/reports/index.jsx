@@ -6,8 +6,9 @@ import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import { faDownload, faEye, faFile, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faEye, faFile, faStar, faVolleyballBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
 
 export default function Reports({ auth, errors, examDates, examTimes, examRooms, applicantResultExam }) {
 
@@ -20,21 +21,33 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     const { data: counts, setData: setCounts } = useForm({
         count: ""
     })
-
     const trackCount = applicantResultExam.length;
+
+    const [listAthleteState, setListAthleteState] = useState('ON');
+    const [currentList, setCurrentList] = useState(applicantResultExam);
 
     const handleExcel = () => {
 
         const wb = XLSX.utils.book_new(),
-            ws = XLSX.utils.json_to_sheet(applicantResultExam);
+            ws = XLSX.utils.json_to_sheet(currentList);
 
         XLSX.utils.book_append_sheet(wb, ws, "ExamResult");
 
         XLSX.writeFile(wb, `AdmissionTCU(2025-2026).xlsx`);
     };
 
-    const examScoreConflictCount = applicantResultExam.filter(applicant => applicant.exam_score <= 0).length;
-    const gwaScoreConflictCount = applicantResultExam.filter(applicant => applicant.gwascore <= 30).length;
+    const handleAthlete = () => {
+        if (listAthleteState === 'ON') {
+            setListAthleteState('OFF');
+            setCurrentList(applicantResultExam.filter(applicant => applicant.athlete !== 'Yes'));
+        } else {
+            setListAthleteState('ON');
+            setCurrentList(applicantResultExam);
+        }
+    };
+
+    const examScoreConflictCount = currentList.filter(applicant => applicant.exam_score <= 0).length;
+    const gwaScoreConflictCount = currentList.filter(applicant => applicant.gwascore <= 30).length;
 
     return (
         <AuthenticatedLayout
@@ -148,13 +161,28 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
             <div className=" p-5 px-20">
 
-                <div>
+                <div className='mb-2'>
                     <button
                         onClick={handleExcel}
-                        className='text-white'
+                        className='text-white hover:underline'
                     >
                         <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
                     </button>
+
+
+                    <button
+                        onClick={handleAthlete}
+                        className='ml-4 text-white hover:underline'
+                    >
+                        <FontAwesomeIcon icon={faVolleyballBall} /> Athlete :
+                    </button>
+                    {listAthleteState === "ON" ? (
+                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md" 
+                         style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                    ) : (
+                        <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md"
+                         style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                    )}
                 </div>
                 <div className='bg-white pl-2 text-[12px]'>
                     <p>Aplicants with 0 Exam Score: <u>&nbsp;&nbsp;{examScoreConflictCount}&nbsp;&nbsp;</u> </p>
@@ -175,7 +203,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
 
 
-                    {applicantResultExam.map((applicant, index) => (
+                    {currentList.map((applicant, index) => (
 
                         <tr
                             key={applicant.id}
