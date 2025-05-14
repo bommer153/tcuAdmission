@@ -6,7 +6,7 @@ import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import { faDownload, faEye, faFile, faStar, faVolleyballBall } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faDownload, faEye, faFile, faStar, faVolleyballBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 
@@ -21,10 +21,14 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     const { data: counts, setData: setCounts } = useForm({
         count: ""
     })
-    const trackCount = applicantResultExam.length;
 
     const [listAthleteState, setListAthleteState] = useState('ON');
+    const [listALS, setListALS] = useState('OFF');
+    const [listAthlete, setListAthlete] = useState('OFF');
     const [currentList, setCurrentList] = useState(applicantResultExam);
+    const [passingScoreALS, setPassingScoreALS] = useState(0);
+
+    const trackCount = currentList.length;
 
     const handleExcel = () => {
 
@@ -42,6 +46,32 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
             setCurrentList(applicantResultExam.filter(applicant => applicant.athlete !== 'Yes'));
         } else {
             setListAthleteState('ON');
+            setListALS('OFF');
+            setListAthlete('OFF');
+            setCurrentList(applicantResultExam);
+        }
+    };
+
+    const handleALS = () => {
+        if (listALS === 'OFF') {
+            setListALS('ON');
+            setListAthleteState('OFF');
+            setListAthlete('OFF');
+            setCurrentList(applicantResultExam.filter(applicant => applicant.applicantType === 'ALS'));
+        } else {
+            setListALS('OFF');
+            setCurrentList(applicantResultExam);
+        }
+    };
+
+    const handleAthleteOnly = () => {
+        if (listAthlete === 'OFF') {
+            setListAthlete('ON');
+            setListAthleteState('OFF');
+            setListALS('OFF');
+            setCurrentList(applicantResultExam.filter(applicant => applicant.athlete === 'Yes'));
+        } else {
+            setListAthlete('OFF');
             setCurrentList(applicantResultExam);
         }
     };
@@ -170,19 +200,58 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                     </button>
 
 
-                    <button
-                        onClick={handleAthlete}
-                        className='ml-4 text-white hover:underline'
-                    >
-                        <FontAwesomeIcon icon={faVolleyballBall} /> Athlete :
-                    </button>
-                    {listAthleteState === "ON" ? (
-                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md"
-                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
-                    ) : (
-                        <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md"
-                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
-                    )}
+
+                    <ul>
+                        <li>
+                            <button
+                                onClick={handleAthlete}
+                                className='ml-4 text-white hover:underline'
+                            >
+                                <FontAwesomeIcon icon={faVolleyballBall} /> Athlete :
+                            </button>
+                            {listAthleteState === "ON" ? (
+                                <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
+                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                            ) : (
+                                <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
+                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                            )}
+                        </li>
+                        <li></li>
+                        <li className='mt-2'>
+                            <button
+                                onClick={handleAthleteOnly}
+                                className='ml-4 text-white hover:underline'
+                            >
+                                <FontAwesomeIcon icon={faCircleUser} /> Only Athlete :
+                            </button>
+                            {listAthlete === "ON" ? (
+                                <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
+                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
+                            ) : (
+                                <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
+                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
+                            )}
+                        </li>
+                        <li className='mt-2'>
+                            <button
+                                onClick={handleALS}
+                                className='ml-4 text-white hover:underline'
+                            >
+                                <FontAwesomeIcon icon={faCircleUser} /> Only ALS :
+                            </button>
+                            {listALS === "ON" ? (
+                                <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
+                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                            ) : (
+                                <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
+                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                            )}
+                        </li>
+                    </ul>
+
+
+
                 </div>
                 <div className='bg-white pl-2 text-[12px]'>
                     <p>Aplicants with 0 Exam Score: <u>&nbsp;&nbsp;{examScoreConflictCount}&nbsp;&nbsp;</u> </p>
