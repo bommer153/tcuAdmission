@@ -384,22 +384,20 @@ export default function index(props, queryParams = null) {
                 {/* Modal */}
                 <Modal
                     show={isModalOpen}
-                    maxWidth="3xl"
+                    maxWidth="5xl"
                     closeable={true}
                     onClose={closeModal}
-                    width="sm:max-w-5xl"
-                    height="h-auto" // Custom height
                 >
-                    <div className="max-w-7xl mx-auto lg:px-8">
+                    <div className="max-h-[90vh] overflow-y-auto p-6 bg-gray-800">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                            <div className="text-gray-900 dark:text-gray-100 ">
-                                {props.auth.user.role === '3' ?
-                                    <div className="bg-white dark:bg-gray-800 mt-10 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"></div>
-                                    :
+                            <div className="text-gray-900 dark:text-gray-100">
+                                {props.auth.user.role === '3' ? (
+                                    <div className="bg-white dark:bg-gray-800 mt-6 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"></div>
+                                ) : (
                                     <>
                                         <form
                                             onSubmit={onSubmitRemarks}
-                                            className="bg-white dark:bg-gray-800 mt-5 shadow sm:rounded-lg grid grid-cols-3 gap-2 mb-3"
+                                            className="bg-gray-700 shadow sm:rounded-lg grid grid-cols-3 gap-2 "
                                         >
                                             <div className="mt-4 col-span-2">
                                                 <InputLabel htmlFor="remarks" value="Remarks" />
@@ -414,7 +412,7 @@ export default function index(props, queryParams = null) {
                                                 <InputError message={remarksError.remarks} className="mt-2" />
                                             </div>
 
-                                            <div className="mt-4 ">
+                                            <div className="mt-4">
                                                 <InputLabel htmlFor="status" value="Status" />
                                                 <SelectInput
                                                     id="status"
@@ -429,14 +427,14 @@ export default function index(props, queryParams = null) {
                                                 </SelectInput>
                                                 <InputError message={remarksError.status} className="mt-2" />
                                             </div>
-                                            <div className="mt-4 bm-3">
+
+                                            <div className="mt-4 ">
                                                 <Button id="button">Validate</Button>
                                             </div>
-
                                         </form>
 
-                                        <form onSubmit={onSubmitAthlete} >
-                                            <div className="mt-4 ">
+                                        <form onSubmit={onSubmitAthlete} className="mt-4 mb-2 bg-gray-700 rounded">
+                                            <div >
                                                 <InputLabel htmlFor="athlete" value="Athlete" />
                                                 <SelectInput
                                                     id="athlete"
@@ -451,92 +449,100 @@ export default function index(props, queryParams = null) {
                                                 </SelectInput>
                                                 <InputError message={athleteError.athlete} className="mt-2" />
                                             </div>
-                                            <button className='my-4 bg-blue-600 text-white rounded p-2 hover:bg-green-600'>submit</button>
+                                            <button className="mt-4 bg-blue-600 text-white rounded p-2 hover:bg-green-600">Submit</button>
                                         </form>
-
                                     </>
+                                )}
 
-
-                                }
-                                {athleteData.athlete == 'Yes' &&
-                                    <div className='flex justify-end'>
-                                        <div className='bg-green-700 text-white inline-block p-2 '>ATHLETE</div>
+                                {athleteData.athlete === 'Yes' && (
+                                    <div className="flex justify-end">
+                                        <div className="bg-green-700 text-white inline-block p-2">ATHLETE</div>
                                     </div>
-                                }
+                                )}
 
-                                <div className="grid grid-cols-2">
+                                <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <a href={route('applicant.show', 1)} target="_blank" className="bg-blue-600 text-white rounded p-2 hover:bg-green-600 mb-8">
+                                        <a href={route('applicant.show', 1)} target="_blank" className="bg-blue-600 text-white rounded p-2 hover:bg-green-600 mb-4 inline-block">
                                             Edit Applicant
                                         </a>
-                                        {remarksData.image_captured && <img src={"storage/snap/"+remarksData.image_captured} alt="applicant image" className='h-[250px] w-[400px] bg-white'/>}
-                                        <h1 className='mt-10'><span className="font-bold">First Name :</span> {remarksData.first_name}</h1>
+
+                                        {remarksData.image_captured && (
+                                            <img
+                                                src={`storage/snap/${remarksData.image_captured}`}
+                                                alt="applicant image"
+                                                className="h-[250px] w-[400px] bg-white"
+                                            />
+                                        )}
+
+                                        <h1 className="mt-6"><span className="font-bold">First Name :</span> {remarksData.first_name}</h1>
                                         <h1><span className="font-bold">Middle Name :</span> {remarksData.middle_name}</h1>
-                                        <h1><span className="font-bold">Last Name :</span> {remarksData.last_name} </h1>
-                                        <hr className="mb-2 mt-2 w-4/5"></hr>
-                                        <h1><span className="font-bold">Sex :</span> {remarksData.sex} </h1>
-                                        <h1><span className="font-bold">Age :</span> {remarksData.age} </h1>
-                                        <h1><span className="font-bold">Birth Date :</span> {remarksData.dob} </h1>
-                                        <h1><span className="font-bold">Birth Place :</span> {remarksData.birth_place} </h1>
-                                        <h1><span className="font-bold">Religion :</span> {remarksData.religion} </h1>
-                                        <h1><span className="font-bold">Address :</span> {remarksData.address} </h1>
-                                        <h1><span className="font-bold">Barangay :</span> {remarksData.barangay} </h1>
-                                        <h1><span className="font-bold">Zip Code :</span> {remarksData.zip_code} </h1>
-                                        <h1><span className="font-bold">Contact No :</span> {remarksData.contact_no} </h1>
-                                        <h1><span className="font-bold">Nationality :</span> {remarksData.nationality} </h1>
-                                        <h1><span className="font-bold">Civil Status :</span> {remarksData.civil_status} </h1>
-                                        <h1><span className="font-bold">Ethnic Background :</span> {remarksData.ethnic_background} </h1>
-                                        <hr className="mb-2 mt-2 w-4/5"></hr>
-                                        <h1><span className="font-bold">Parent's Name :</span> {remarksData.name_of_parent} </h1>
-                                        <h1><span className="font-bold">Parent's Contact No. :</span> {remarksData.parent_contact_no} </h1>
-                                        <h1><span className="font-bold">Parent's Comelec No. :</span> {remarksData.parent_comelec_no} </h1>
-                                        <h1><span className="font-bold">Student Comelec No. :</span> {remarksData.student_comelec_no} </h1>
+                                        <h1><span className="font-bold">Last Name :</span> {remarksData.last_name}</h1>
+                                        <hr className="my-2 w-4/5" />
+                                        <h1><span className="font-bold">Sex :</span> {remarksData.sex}</h1>
+                                        <h1><span className="font-bold">Age :</span> {remarksData.age}</h1>
+                                        <h1><span className="font-bold">Birth Date :</span> {remarksData.dob}</h1>
+                                        <h1><span className="font-bold">Birth Place :</span> {remarksData.birth_place}</h1>
+                                        <h1><span className="font-bold">Religion :</span> {remarksData.religion}</h1>
+                                        <h1><span className="font-bold">Address :</span> {remarksData.address}</h1>
+                                        <h1><span className="font-bold">Barangay :</span> {remarksData.barangay}</h1>
+                                        <h1><span className="font-bold">Zip Code :</span> {remarksData.zip_code}</h1>
+                                        <h1><span className="font-bold">Contact No :</span> {remarksData.contact_no}</h1>
+                                        <h1><span className="font-bold">Nationality :</span> {remarksData.nationality}</h1>
+                                        <h1><span className="font-bold">Civil Status :</span> {remarksData.civil_status}</h1>
+                                        <h1><span className="font-bold">Ethnic Background :</span> {remarksData.ethnic_background}</h1>
+                                        <hr className="my-2 w-4/5" />
+                                        <h1><span className="font-bold">Parent's Name :</span> {remarksData.name_of_parent}</h1>
+                                        <h1><span className="font-bold">Parent's Contact No. :</span> {remarksData.parent_contact_no}</h1>
+                                        <h1><span className="font-bold">Parent's Comelec No. :</span> {remarksData.parent_comelec_no}</h1>
+                                        <h1><span className="font-bold">Student Comelec No. :</span> {remarksData.student_comelec_no}</h1>
                                     </div>
+
                                     <div>
-                                        {remarksData.applicantType == 'Freshmen' && (
+                                        {remarksData.applicantType === 'Freshmen' && (
                                             <div>
                                                 <h1><span className="font-bold">LRN :</span> {remarksData.lrn}</h1>
                                                 <h1><span className="font-bold">Strand :</span> {remarksData.strand}</h1>
-                                                <br></br>
-                                                <h1><span className="font-bold">Junior High School :</span> {remarksData.junior_high_school} </h1>
-                                                <h1><span className="font-bold">Junior High School Year Graduated:</span> {remarksData.junior_high_school_year_graduated} </h1>
-                                                <br></br>
-                                                <h1><span className="font-bold">Senior High School :</span> {remarksData.senior_high_school} </h1>
-                                                <h1><span className="font-bold">Senior High School Year Graduated:</span> {remarksData.senior_high_school_year_graduated} </h1>
-                                                <h1><span className="font-bold">• Grade 11 - 1st Sem GWA :</span> {remarksData.g11_gwa1} </h1>
-                                                <h1><span className="font-bold">• Grade 11 - 2st Sem GWA :</span> {remarksData.g11_gwa2} </h1>
-                                                <h1><span className="font-bold">• Grade 12 - 1st Sem GWA :</span> {remarksData.g12_gwa1} </h1>
-                                                <h1><span className="font-bold">• Grade 12 - 2st Sem GWA :</span> {remarksData.g12_gwa2} </h1>
+                                                <br />
+                                                <h1><span className="font-bold">Junior High School :</span> {remarksData.junior_high_school}</h1>
+                                                <h1><span className="font-bold">Junior High School Year Graduated:</span> {remarksData.junior_high_school_year_graduated}</h1>
+                                                <br />
+                                                <h1><span className="font-bold">Senior High School :</span> {remarksData.senior_high_school}</h1>
+                                                <h1><span className="font-bold">Senior High School Year Graduated:</span> {remarksData.senior_high_school_year_graduated}</h1>
+                                                <h1><span className="font-bold">• Grade 11 - 1st Sem GWA :</span> {remarksData.g11_gwa1}</h1>
+                                                <h1><span className="font-bold">• Grade 11 - 2nd Sem GWA :</span> {remarksData.g11_gwa2}</h1>
+                                                <h1><span className="font-bold">• Grade 12 - 1st Sem GWA :</span> {remarksData.g12_gwa1}</h1>
+                                                <h1><span className="font-bold">• Grade 12 - 2nd Sem GWA :</span> {remarksData.g12_gwa2}</h1>
                                             </div>
                                         )}
 
-                                        {remarksData.applicantType == 'ALS' && (
+                                        {remarksData.applicantType === 'ALS' && (
                                             <div>
-                                                <h1><span className="font-bold">AlS Learning Center:</span> {remarksData.als_learning_center} </h1>
-                                                <h1><span className="font-bold">ALS Year Graduated:</span> {remarksData.als_learning_center_year_graduated} </h1>
-                                                <h1><span className="font-bold">A&E Testing Date </span> {remarksData.als_accreditation_equivalent_testing_date} </h1>
-                                                <h1><span className="font-bold">A&E Rating </span> {remarksData.als_accreditation_equivalent_rating} </h1>
-                                                <h1><span className="font-bold">A&E Remarks :</span> {remarksData.als_accreditation_equivalent_remarks} </h1>
+                                                <h1><span className="font-bold">ALS Learning Center:</span> {remarksData.als_learning_center}</h1>
+                                                <h1><span className="font-bold">ALS Year Graduated:</span> {remarksData.als_learning_center_year_graduated}</h1>
+                                                <h1><span className="font-bold">A&E Testing Date:</span> {remarksData.als_accreditation_equivalent_testing_date}</h1>
+                                                <h1><span className="font-bold">A&E Rating:</span> {remarksData.als_accreditation_equivalent_rating}</h1>
+                                                <h1><span className="font-bold">A&E Remarks:</span> {remarksData.als_accreditation_equivalent_remarks}</h1>
                                             </div>
                                         )}
-                                        <hr className="mb-2 mt-2 w-4/5"></hr>
-                                        <h1><span className="font-bold">First Choice :</span> {remarksData.first_course} </h1>
-                                        <h1><span className="font-bold">Second Choice :</span> {remarksData.second_course} </h1>
-                                        <h1><span className="font-bold">Third Choice : </span> {remarksData.third_course} </h1>
-                                        <hr className="mb-2 mt-2 w-4/5"></hr>
-                                        <div className={`${selectedUser?.status == 'Incomplete' ? 'bg-red-500' : 'bg-green-900'} p-3 rounded `}>
-                                            <h1><span className="font-bold">Validador :</span> {remarksData.validated_by?.name || "N/A"} </h1>
-                                            <h1><span className="font-bold">Remarks :</span> {selectedUser?.remarks || "N/A"} </h1>
-                                            <h1><span className="font-bold">Status :</span> {selectedUser?.status || "N/A"} </h1>
+
+                                        <hr className="my-2 w-4/5" />
+                                        <h1><span className="font-bold">First Choice :</span> {remarksData.first_course}</h1>
+                                        <h1><span className="font-bold">Second Choice :</span> {remarksData.second_course}</h1>
+                                        <h1><span className="font-bold">Third Choice :</span> {remarksData.third_course}</h1>
+                                        <hr className="my-2 w-4/5" />
+
+                                        <div className={`${selectedUser?.status === 'Incomplete' ? 'bg-red-500' : 'bg-green-900'} p-3 rounded`}>
+                                            <h1><span className="font-bold">Validator :</span> {remarksData.validated_by?.name || "N/A"}</h1>
+                                            <h1><span className="font-bold">Remarks :</span> {selectedUser?.remarks || "N/A"}</h1>
+                                            <h1><span className="font-bold">Status :</span> {selectedUser?.status || "N/A"}</h1>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
                 </Modal>
+
 
                 <Modal
                     show={isScoreOpen}

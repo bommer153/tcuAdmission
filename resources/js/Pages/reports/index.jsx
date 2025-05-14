@@ -177,7 +177,10 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
                     {applicantResultExam.map((applicant, index) => (
 
-                        <tr key={applicant.id}>
+                        <tr
+                            key={applicant.id}
+                            className={applicant.athlete === 'Yes' ? 'bg-yellow-300' : ''}
+                        >
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '8px' }}>{index + 1}</th>
                             <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.name}</th>
                             <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
