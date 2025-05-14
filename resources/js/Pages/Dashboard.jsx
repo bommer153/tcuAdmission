@@ -14,7 +14,7 @@ export default function Dashboard(props, queryParams = null) {
     const [activeTab, setActiveTab] = useState('MAIN');
     const [visibleRows, setVisibleRows] = useState({});
 
-    const [listAthleteState, setListAthleteState] = useState('ON');
+    const [listAthleteState, setListAthleteState] = useState('OFF');
     const [currentList, setCurrentList] = useState(props.athleteApplicant);
 
     queryParams = props.queryParams || {};
@@ -90,11 +90,11 @@ export default function Dashboard(props, queryParams = null) {
     };
 
     const handleAthlete = () => {
-        if (listAthleteState === 'ON') {
-            setListAthleteState('OFF');
+        if (listAthleteState === 'OFF') {
+            setListAthleteState('ON');
             setCurrentList(props.athleteApplicant.filter(applicant => applicant.overall >= 70));
         } else {
-            setListAthleteState('ON');
+            setListAthleteState('OFF');
             setCurrentList(props.athleteApplicant);
         }
     };
