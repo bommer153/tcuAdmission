@@ -326,6 +326,7 @@ class PdfController extends Controller
                 'second_course as secondChoice',
                 'third_course as thirdChoice',
                 'athlete',
+                'applicantType',
             )
             //   -where('status', '') // original code
             ->whereNotNull('scored_by')
