@@ -6,7 +6,7 @@ import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import { faCircleUser, faDownload, faEye, faFile, faStar, faVolleyballBall } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faDownload, faEye, faFile, faStar, faUser, faVolleyballBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 
@@ -22,11 +22,13 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         count: ""
     })
 
+
+
     const [listAthleteState, setListAthleteState] = useState('ON');
+    const [listALSState, setListALSState] = useState('ON');
     const [listALS, setListALS] = useState('OFF');
     const [listAthlete, setListAthlete] = useState('OFF');
     const [currentList, setCurrentList] = useState(applicantResultExam);
-    const [passingScoreALS, setPassingScoreALS] = useState(0);
 
     const trackCount = currentList.length;
 
@@ -40,41 +42,61 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         XLSX.writeFile(wb, `AdmissionTCU(2025-2026).xlsx`);
     };
 
-    const handleAthlete = () => {
-        if (listAthleteState === 'ON') {
-            setListAthleteState('OFF');
-            setCurrentList(applicantResultExam.filter(applicant => applicant.athlete !== 'Yes'));
+    // Shared filter function
+    const applyFilters = (athleteState, alsState, onlyAthlete, onlyALS) => {
+        let filtered = applicantResultExam;
+
+        if (onlyAthlete === 'ON') {
+            filtered = applicantResultExam.filter(applicant => applicant.athlete === 'Yes');
+        } else if (onlyALS === 'ON') {
+            filtered = applicantResultExam.filter(applicant => applicant.applicantType === 'ALS');
         } else {
-            setListAthleteState('ON');
-            setListALS('OFF');
-            setListAthlete('OFF');
-            setCurrentList(applicantResultExam);
+            if (athleteState === 'OFF') {
+                filtered = filtered.filter(applicant => applicant.athlete !== 'Yes');
+            }
+            if (alsState === 'OFF') {
+                filtered = filtered.filter(applicant => applicant.applicantType !== 'ALS');
+            }
         }
+
+        setCurrentList(filtered);
+    };
+
+    // Handlers
+    const handleAthlete = () => {
+        const newState = listAthleteState === 'ON' ? 'OFF' : 'ON';
+        setListAthleteState(newState);
+        setListAthlete('OFF');
+        setListALS('OFF');
+        applyFilters(newState, listALSState, 'OFF', 'OFF');
     };
 
     const handleALS = () => {
-        if (listALS === 'OFF') {
-            setListALS('ON');
-            setListAthleteState('OFF');
-            setListAthlete('OFF');
-            setCurrentList(applicantResultExam.filter(applicant => applicant.applicantType === 'ALS'));
-        } else {
-            setListALS('OFF');
-            setCurrentList(applicantResultExam);
-        }
+        const newState = listALSState === 'ON' ? 'OFF' : 'ON';
+        setListALSState(newState);
+        setListALS('OFF');
+        setListAthlete('OFF');
+        applyFilters(listAthleteState, newState, 'OFF', 'OFF');
+    };
+
+    const handleALSOnly = () => {
+        const newState = listALS === 'OFF' ? 'ON' : 'OFF';
+        setListALS(newState);
+        setListAthlete('OFF');
+        setListAthleteState('OFF');
+        setListALSState('OFF');
+        applyFilters('OFF', 'OFF', 'OFF', newState);
     };
 
     const handleAthleteOnly = () => {
-        if (listAthlete === 'OFF') {
-            setListAthlete('ON');
-            setListAthleteState('OFF');
-            setListALS('OFF');
-            setCurrentList(applicantResultExam.filter(applicant => applicant.athlete === 'Yes'));
-        } else {
-            setListAthlete('OFF');
-            setCurrentList(applicantResultExam);
-        }
+        const newState = listAthlete === 'OFF' ? 'ON' : 'OFF';
+        setListAthlete(newState);
+        setListALS('OFF');
+        setListAthleteState('OFF');
+        setListALSState('OFF');
+        applyFilters('OFF', 'OFF', newState, 'OFF');
     };
+
 
     const examScoreConflictCount = currentList.filter(applicant => applicant.exam_score <= 0).length;
     const gwaScoreConflictCount = currentList.filter(applicant => applicant.gwascore <= 30).length;
@@ -191,66 +213,81 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
             <div className=" p-5 px-20">
 
-                <div className='mb-2'>
+                <div className='mb-2 bg-white rounded p-4'>
                     <button
                         onClick={handleExcel}
-                        className='text-white hover:underline'
+                        className=' hover:underline'
                     >
                         <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
                     </button>
 
 
-
                     <ul>
-                        <li>
+                        <li className='mt-2 text-gray-600'>
+
+                            <FontAwesomeIcon icon={faVolleyballBall} /> Athlete :
+
                             <button
                                 onClick={handleAthlete}
-                                className='ml-4 text-white hover:underline'
                             >
-                                <FontAwesomeIcon icon={faVolleyballBall} /> Athlete :
+                                {listAthleteState === "ON" ? (
+                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                                ) : (
+                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                                )}
                             </button>
-                            {listAthleteState === "ON" ? (
-                                <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
-                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
-                            ) : (
-                                <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
-                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
-                            )}
                         </li>
-                        <li></li>
-                        <li className='mt-2'>
-                            <button
-                                onClick={handleAthleteOnly}
-                                className='ml-4 text-white hover:underline'
-                            >
-                                <FontAwesomeIcon icon={faCircleUser} /> Only Athlete :
-                            </button>
-                            {listAthlete === "ON" ? (
-                                <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
-                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
-                            ) : (
-                                <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
-                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
-                            )}
-                        </li>
-                        <li className='mt-2'>
+                        <li className='mt-2 text-gray-600'>
+                            <FontAwesomeIcon icon={faUser} /> ALS :
+
                             <button
                                 onClick={handleALS}
-                                className='ml-4 text-white hover:underline'
                             >
-                                <FontAwesomeIcon icon={faCircleUser} /> Only ALS :
+                                {listALSState === "ON" ? (
+                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALSState}</span>
+                                ) : (
+                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALSState}</span>
+                                )}
                             </button>
-                            {listALS === "ON" ? (
-                                <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
-                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
-                            ) : (
-                                <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px]"
-                                    style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
-                            )}
+                        </li>
+                        <li className='mt-2 text-gray-600'>
+
+                            <FontAwesomeIcon icon={faCircleUser} /> Only Athlete :
+                            <button
+                                onClick={handleAthleteOnly}
+                            >
+                                {listAthlete === "ON" ? (
+                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
+                                ) : (
+                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
+                                )}
+                            </button>
+                        </li>
+                        <li className='mt-2 text-gray-600'>
+                            <FontAwesomeIcon icon={faCircleUser} /> Only ALS :
+                            <button
+                                onClick={handleALSOnly}
+                            >
+                                {listALS === "ON" ? (
+                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                                ) : (
+                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                                )}
+                            </button>
                         </li>
                     </ul>
 
-
+                    <div>
+                        {/* put input here */}
+                    </div>
 
                 </div>
                 <div className='bg-white pl-2 text-[12px]'>
