@@ -28,7 +28,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     const [listALSState, setListALSState] = useState('ON');
     const [listALS, setListALS] = useState('OFF');
     const [listAthlete, setListAthlete] = useState('OFF');
-    // const [listGWAconflict, setListGWAconflict] = useState('OFF');
+    const [onlyGWAConflict, setOnlyGWAConflict] = useState('OFF');
     const [currentList, setCurrentList] = useState(applicantResultExam);
 
     const trackCount = currentList.length;
@@ -44,10 +44,18 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     };
 
     // Shared filter function
-    const applyFilters = (athleteState, alsState, onlyAthlete, onlyALS) => {
+    const applyFilters = (
+        athleteState,
+        alsState,
+        onlyAthlete,
+        onlyALS,
+        gwaConflict
+    ) => {
         let filtered = applicantResultExam;
 
-        if (onlyAthlete === 'ON') {
+        if (gwaConflict === 'ON') {
+            filtered = applicantResultExam.filter(applicant => applicant.gwascore <= 30);
+        } else if (onlyAthlete === 'ON') {
             filtered = applicantResultExam.filter(applicant => applicant.athlete === 'Yes');
         } else if (onlyALS === 'ON') {
             filtered = applicantResultExam.filter(applicant => applicant.applicantType === 'ALS');
@@ -63,51 +71,60 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         setCurrentList(filtered);
     };
 
+
     // Handlers
+    // Toggle exclude-athletes filter
     const handleAthlete = () => {
         const newState = listAthleteState === 'ON' ? 'OFF' : 'ON';
         setListAthleteState(newState);
         setListAthlete('OFF');
         setListALS('OFF');
-        applyFilters(newState, listALSState, 'OFF', 'OFF');
+        setOnlyGWAConflict('OFF');
+        applyFilters(newState, listALSState, 'OFF', 'OFF', 'OFF');
     };
 
+    // Toggle exclude-ALS filter
     const handleALS = () => {
         const newState = listALSState === 'ON' ? 'OFF' : 'ON';
         setListALSState(newState);
         setListALS('OFF');
         setListAthlete('OFF');
-        applyFilters(listAthleteState, newState, 'OFF', 'OFF');
+        setOnlyGWAConflict('OFF');
+        applyFilters(listAthleteState, newState, 'OFF', 'OFF', 'OFF');
     };
 
+    // Toggle only ALS applicants
     const handleALSOnly = () => {
         const newState = listALS === 'OFF' ? 'ON' : 'OFF';
         setListALS(newState);
-        // setListGWAconflict('OFF');
         setListAthlete('OFF');
+        setOnlyGWAConflict('OFF');
         setListAthleteState('OFF');
         setListALSState('OFF');
-        applyFilters('OFF', 'OFF', 'OFF', newState);
+        applyFilters('OFF', 'OFF', 'OFF', newState, 'OFF');
     };
 
+    // Toggle only athlete applicants
     const handleAthleteOnly = () => {
         const newState = listAthlete === 'OFF' ? 'ON' : 'OFF';
         setListAthlete(newState);
-        // setListGWAconflict('OFF');
+        setListALS('OFF');
+        setOnlyGWAConflict('OFF');
+        setListAthleteState('OFF');
+        setListALSState('OFF');
+        applyFilters('OFF', 'OFF', newState, 'OFF', 'OFF');
+    };
+
+    // Toggle only GWA conflict applicants (gwascore <= 30)
+    const handleOnlyGWAConflict = () => {
+        const newState = onlyGWAConflict === 'OFF' ? 'ON' : 'OFF';
+        setOnlyGWAConflict(newState);
+        setListAthlete('OFF');
         setListALS('OFF');
         setListAthleteState('OFF');
         setListALSState('OFF');
-        applyFilters('OFF', 'OFF', newState, 'OFF');
+        applyFilters('OFF', 'OFF', 'OFF', 'OFF', newState);
     };
-
-    // const handleGWAconflictOnly = () => {
-    //     const newState = listGWAconflict === 'OFF' ? 'ON' : 'OFF';
-    //     setListGWAconflict(newState);
-    //     setListALS('OFF');
-    //     setListAthleteState('OFF');
-    //     setListALSState('OFF');
-    //     applyFilters('OFF', 'OFF', newState, 'OFF');
-    // };
 
 
 
@@ -300,6 +317,20 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                                 )}
                             </button>
                         </li>
+                        <li className='mt-2 text-gray-600'>
+                            <FontAwesomeIcon icon={faCircleUser} /> Only GWA with Conflict (GWA &lt;= 30) :
+                            <button
+                                onClick={handleOnlyGWAConflict}
+                            >
+                                {listALS === "ON" ? (
+                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                                ) : (
+                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                                )}
+                            </button>
+                        </li>
                     </ul>
 
                     <div>
@@ -329,7 +360,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
 
                     {currentList.map((applicant, index) => (
-                        
+
                         <tr
                             key={applicant.id}
                             className={applicant.athlete === 'Yes' ? 'bg-yellow-300' : ''}
