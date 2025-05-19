@@ -28,6 +28,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     const [listALSState, setListALSState] = useState('ON');
     const [listALS, setListALS] = useState('OFF');
     const [listAthlete, setListAthlete] = useState('OFF');
+    // const [listGWAconflict, setListGWAconflict] = useState('OFF');
     const [currentList, setCurrentList] = useState(applicantResultExam);
 
     const trackCount = currentList.length;
@@ -82,6 +83,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     const handleALSOnly = () => {
         const newState = listALS === 'OFF' ? 'ON' : 'OFF';
         setListALS(newState);
+        // setListGWAconflict('OFF');
         setListAthlete('OFF');
         setListAthleteState('OFF');
         setListALSState('OFF');
@@ -91,11 +93,22 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     const handleAthleteOnly = () => {
         const newState = listAthlete === 'OFF' ? 'ON' : 'OFF';
         setListAthlete(newState);
+        // setListGWAconflict('OFF');
         setListALS('OFF');
         setListAthleteState('OFF');
         setListALSState('OFF');
         applyFilters('OFF', 'OFF', newState, 'OFF');
     };
+
+    // const handleGWAconflictOnly = () => {
+    //     const newState = listGWAconflict === 'OFF' ? 'ON' : 'OFF';
+    //     setListGWAconflict(newState);
+    //     setListALS('OFF');
+    //     setListAthleteState('OFF');
+    //     setListALSState('OFF');
+    //     applyFilters('OFF', 'OFF', newState, 'OFF');
+    // };
+
 
 
     const examScoreConflictCount = currentList.filter(applicant => applicant.exam_score <= 0).length;
