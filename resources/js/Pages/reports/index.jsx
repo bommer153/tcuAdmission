@@ -113,7 +113,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
     const examScoreConflictCount = currentList.filter(applicant => applicant.exam_score <= 0).length;
     const gwaScoreConflictCount = currentList.filter(applicant => applicant.gwascore <= 30).length;
-
+    console.log(currentList)
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -329,7 +329,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
 
                     {currentList.map((applicant, index) => (
-
+                        
                         <tr
                             key={applicant.id}
                             className={applicant.athlete === 'Yes' ? 'bg-yellow-300' : ''}
@@ -341,9 +341,9 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                             <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
 
                             {applicant.exam_score > 0 ?
-                                <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
+                                <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score}) {applicant.exam_score}</th>
                                 :
-                                <th style={{ width: '5%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }} title="0 EXAM GRADE">({applicant.final_exam_score.toFixed(2)}) {applicant.exam_score}</th>
+                                <th style={{ width: '5%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }} title="0 EXAM GRADE">({applicant.final_exam_score}) {applicant.exam_score}</th>
                             }
                             {applicant.gwascore >= 30 ?
                                 <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.gwascore).toFixed(2)}</th>
