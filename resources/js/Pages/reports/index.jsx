@@ -109,117 +109,121 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         >
             <Head title="Dashboard" />
 
-            <div className="py-12">
-                <div className="grid grid-cols-2 px-10">
-                    <div className="px-5">
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                            <div className="p-6 text-gray-900 dark:text-gray-100">
-                                <form className="grid grid-cols-3">
-                                    <div>
-                                        <InputLabel htmlFor="date" value="Date" />
-                                        <SelectInput
-                                            id="date"
-                                            name="examDate"
-                                            value={data.date}
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setData("date", e.target.value)}
-                                        >
-                                            <option>--SELECT DATE--</option>
-                                            {examDates.map((examDate) => (
-                                                <option key={examDate.id} value={examDate.exam_date}>{examDate.exam_date}</option>
-                                            ))}
-                                        </SelectInput>
-                                        <InputError message={errors.examDate} className="mt-2" />
+            {auth.user.role == '1' && (
+                <div className="py-12">
+                    <div className="grid grid-cols-2 px-10">
+                        <div className="px-5">
+                            <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                                <div className="p-6 text-gray-900 dark:text-gray-100">
+                                    <form className="grid grid-cols-3">
+                                        <div>
+                                            <InputLabel htmlFor="date" value="Date" />
+                                            <SelectInput
+                                                id="date"
+                                                name="examDate"
+                                                value={data.date}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) => setData("date", e.target.value)}
+                                            >
+                                                <option>--SELECT DATE--</option>
+                                                {examDates.map((examDate) => (
+                                                    <option key={examDate.id} value={examDate.exam_date}>{examDate.exam_date}</option>
+                                                ))}
+                                            </SelectInput>
+                                            <InputError message={errors.examDate} className="mt-2" />
+                                        </div>
+
+                                        <div className="ml-3">
+                                            <InputLabel htmlFor="time" value="Shift" />
+                                            <SelectInput
+                                                id="time"
+                                                name="examTime"
+                                                value={data.time}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) => setData("time", e.target.value)}
+                                            >
+                                                <option>--SELECT TIME--</option>
+                                                {examTimes.map((examTime) => (
+                                                    <option key={examTime.id} value={examTime.exam_time}>{examTime.exam_time}</option>
+                                                ))}
+                                            </SelectInput>
+                                            <InputError message={errors.examTime} className="mt-2" />
+                                        </div>
+
+                                        <div className="ml-3">
+                                            <InputLabel htmlFor="room" value="Room" />
+                                            <SelectInput
+                                                id="room"
+                                                name="room"
+                                                value={data.room}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) => setData("room", e.target.value)}
+                                            >
+                                                <option>--SELECT EXAM ROOM--</option>
+                                                {examRooms.map((examRoom) => (
+                                                    <option key={examRoom.id} value={examRoom.room_no}>{examRoom.room_no}</option>
+                                                ))}
+                                            </SelectInput>
+                                            <InputError message={errors.room} className="mt-2" />
+                                        </div>
+                                    </form>
+                                    <div className="mt-5">
+                                        <a href={route('pdf.seatRecord', { date: data.date, time: data.time, room: data.room })} target="_blank">
+                                            <Button className="mr-3"> Seat Report </Button>
+                                        </a>
+
+                                        <a href={route('pdf.seatPlan', { date: data.date, time: data.time, room: data.room })} target="_blank">
+                                            <Button className="mr-3"> Seat Plan </Button>
+                                        </a>
                                     </div>
 
-                                    <div className="ml-3">
-                                        <InputLabel htmlFor="time" value="Shift" />
-                                        <SelectInput
-                                            id="time"
-                                            name="examTime"
-                                            value={data.time}
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setData("time", e.target.value)}
-                                        >
-                                            <option>--SELECT TIME--</option>
-                                            {examTimes.map((examTime) => (
-                                                <option key={examTime.id} value={examTime.exam_time}>{examTime.exam_time}</option>
-                                            ))}
-                                        </SelectInput>
-                                        <InputError message={errors.examTime} className="mt-2" />
-                                    </div>
-
-                                    <div className="ml-3">
-                                        <InputLabel htmlFor="room" value="Room" />
-                                        <SelectInput
-                                            id="room"
-                                            name="room"
-                                            value={data.room}
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setData("room", e.target.value)}
-                                        >
-                                            <option>--SELECT EXAM ROOM--</option>
-                                            {examRooms.map((examRoom) => (
-                                                <option key={examRoom.id} value={examRoom.room_no}>{examRoom.room_no}</option>
-                                            ))}
-                                        </SelectInput>
-                                        <InputError message={errors.room} className="mt-2" />
-                                    </div>
-                                </form>
-                                <div className="mt-5">
-                                    <a href={route('pdf.seatRecord', { date: data.date, time: data.time, room: data.room })} target="_blank">
-                                        <Button className="mr-3"> Seat Report </Button>
-                                    </a>
-
-                                    <a href={route('pdf.seatPlan', { date: data.date, time: data.time, room: data.room })} target="_blank">
-                                        <Button className="mr-3"> Seat Plan </Button>
-                                    </a>
                                 </div>
-
                             </div>
                         </div>
-                    </div>
 
-                    <div className="px-5">
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                            <div className="p-6 text-gray-900 dark:text-gray-100">
-                                <form>
-                                    <div>
-                                        <InputLabel htmlFor="count" value="Count" />
-                                        <TextInput
-                                            id="count"
-                                            name="count"
-                                            value={counts.count}
-                                            type="number"
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setCounts("count", e.target.value)}
-                                        >
-                                        </TextInput>
-                                        <InputError message={errors.count} className="mt-2" />
+                        <div className="px-5">
+                            <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                                <div className="p-6 text-gray-900 dark:text-gray-100">
+                                    <form>
+                                        <div>
+                                            <InputLabel htmlFor="count" value="Count" />
+                                            <TextInput
+                                                id="count"
+                                                name="count"
+                                                value={counts.count}
+                                                type="number"
+                                                className="mt-1 block w-full"
+                                                onChange={(e) => setCounts("count", e.target.value)}
+                                            >
+                                            </TextInput>
+                                            <InputError message={errors.count} className="mt-2" />
+                                        </div>
+
+                                    </form>
+                                    <div className="mt-5">
+                                        <a href={route('pdf.result', { counts: counts.count })} target="_blank">
+                                            <Button className="mr-3">Print Exam Result </Button>
+                                        </a>
                                     </div>
 
-                                </form>
-                                <div className="mt-5">
-                                    <a href={route('pdf.result', { counts: counts.count })} target="_blank">
-                                        <Button className="mr-3">Print Exam Result </Button>
-                                    </a>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             <div className=" p-5 px-20">
 
                 <div className='mb-2 bg-white rounded p-4'>
-                    <button
-                        onClick={handleExcel}
-                        className=' hover:underline'
-                    >
-                        <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
-                    </button>
+                    {auth.user.role == '1' && (
+                        <button
+                            onClick={handleExcel}
+                            className=' hover:underline'
+                        >
+                            <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
+                        </button>
+                    )}
 
 
                     <ul>
@@ -291,8 +295,10 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
                 </div>
                 <div className='bg-white pl-2 text-[12px]'>
+                    <p>Count: <u>{trackCount}</u></p>
                     <p>Aplicants with 0 Exam Score: <u>&nbsp;&nbsp;{examScoreConflictCount}&nbsp;&nbsp;</u> </p>
                     <p>Conflict GWA: <u>&nbsp;&nbsp;{gwaScoreConflictCount}&nbsp;&nbsp;</u></p>
+
                 </div>
                 <table cellspacing="0" cellpadding="4" className='bg-white'>
 
@@ -350,14 +356,16 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                         <td></td>
                         <td></td>
                         <td className=" text-right p-5">
-                            <div>
-                                <b style={{ fontSize: '12px' }}>
-                                    Total: {trackCount}
-                                    <br /><br /><br />
-                                    Engr. Ferdinand E. Rubio<br />
-                                    MIS Director
-                                </b>
-                            </div>
+                            {auth.user.role === '1' && (
+                                <div>
+                                    <b style={{ fontSize: '12px' }}>
+                                        Total: {trackCount}
+                                        <br /><br /><br />
+                                        Engr. Ferdinand E. Rubio<br />
+                                        MIS Director
+                                    </b>
+                                </div>
+                            )}
                         </td>
                     </tr>
                 </table >

@@ -33,10 +33,10 @@ export default function Authenticated({ auth, header, children }) {
                             </div>
 
 
-                            {(auth.user.role === '3' || auth.user.role === '1') && (
+                            {(auth.user.role === '3' || auth.user.role === '1' || auth.user.role === '5') && (
                                 <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                     <NavLink href={route('examined.result')} active={route().current('examined.result')}>
-                                        {auth.user.role === '1'? 'Examined' : "Your Examined"}
+                                        {(auth.user.role === '1'  || auth.user.role === '5') ? 'Examined' : "Your Examined"}
                                     </NavLink>
                                 </div>
                             )}
@@ -49,7 +49,7 @@ export default function Authenticated({ auth, header, children }) {
                                 </div>
                             )}
 
-                            {(auth.user.role === '1') && (
+                            {(auth.user.role === '1' || auth.user.role === '5') && (
 
                                 <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                     <NavLink href={route('reports.index')} active={route().current('reports.index')}>
