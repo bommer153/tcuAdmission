@@ -202,24 +202,29 @@ export default function Dashboard(props, queryParams = null) {
                             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8" id="ATHLETE">
                                 <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                                     <div className="p-6 text-gray-900 dark:text-gray-100">
-                                        {props.auth.user.role == 1 &&
+                                        {(props.auth.user.role == 1 || props.auth.user.role == 5) &&
                                             <div>
-                                                <button className='hover:text-blue-500' onClick={handleExcel}>
-                                                    <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
-                                                </button>
-                                                <button
-                                                    onClick={handleAthlete}
-                                                    className='ml-4 text-white hover:underline'
-                                                >
+                                                {props.auth.user.role == 1 &&
+                                                    <button className='hover:text-blue-500' onClick={handleExcel}>
+                                                        <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
+                                                    </button>
+                                                }
+
+                                                <div className='ml-2 my-2'>
                                                     pass :
-                                                </button>
-                                                {listAthleteState === "ON" ? (
-                                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md"
-                                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
-                                                ) : (
-                                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md"
-                                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
-                                                )}
+                                                    <button
+                                                        onClick={handleAthlete}
+                                                        className='ml-2 text-white hover:underline'
+                                                    >
+                                                        {listAthleteState === "ON" ? (
+                                                            <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md"
+                                                                style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                                                        ) : (
+                                                            <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md"
+                                                                style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                                                        )}
+                                                    </button>
+                                                </div>
                                             </div>
                                         }
                                         <div><b>TOTAL:</b> {currentList.length}</div>
