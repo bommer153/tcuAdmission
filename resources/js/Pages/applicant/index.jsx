@@ -14,7 +14,7 @@ import Modal from '@/Components/Modal';
 
 
 export default function index(props, queryParams = null) {
-    console.log(props);
+    // console.log(props);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
@@ -355,14 +355,14 @@ export default function index(props, queryParams = null) {
                                                     onClick={() => openModal(applicant)}>
                                                     <FontAwesomeIcon icon={faEye} />
                                                 </Button>
-                                                {(props.auth.user.role === '1' || props.auth.user.role === '4') && (
+                                                {(props.auth.user.role === '1' || props.auth.user.role === '4') && (applicant.printed_by !== null) && (
                                                     <a href={route('pdf.examPermit', applicant.id)} target="_blank" title="RE-PRINT">
                                                         <Button className="bg-green-500">
                                                             <FontAwesomeIcon icon={faFile} />
                                                         </Button>
                                                     </a>
                                                 )}
-                                                {(props.auth.user.role === '1' || props.auth.user.role === '3') && (
+                                                {(props.auth.user.role === '1' || props.auth.user.role === '3') && (applicant.printed_by !== null) && (
                                                     <Button className="bg-blue-900"
                                                         onClick={() => openScore(applicant)}>
 
