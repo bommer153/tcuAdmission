@@ -129,7 +129,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
 
     const examScoreConflictCount = currentList.filter(applicant => applicant.exam_score <= 0).length;
-    const gwaScoreConflictCount = currentList.filter(applicant => applicant.gwascore <= 30).length;
+    const gwaScoreConflictCount = currentList.filter(applicant => applicant.gwascore <= 30 || applicant.gwascore > 100).length;
     console.log(currentList)
     return (
         <AuthenticatedLayout
@@ -318,7 +318,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                             </button>
                         </li>
                         <li className='mt-2 text-gray-600'>
-                            <FontAwesomeIcon icon={faCircleUser} /> Only GWA with Conflict (GWA &lt;= 30) :
+                            <FontAwesomeIcon icon={faCircleUser} /> Only GWA with Conflict (GWA &lt;= 30 or GWA &gt; 100) :
                             <button
                                 onClick={handleOnlyGWAConflict}
                             >
