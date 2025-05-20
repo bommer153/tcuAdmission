@@ -376,7 +376,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                                 :
                                 <th style={{ width: '5%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }} title="0 EXAM GRADE">({applicant.final_exam_score}) {applicant.exam_score}</th>
                             }
-                            {applicant.gwascore <= 30 ?
+                            {(applicant.gwascore <= 30 || applicant.gwascore > 100) ?
                                 <th style={{ width: '10%', border: '1px solid black', background: 'red', textAlign: 'center', fontSize: '10px' }}
                                     title="POSSIBLE GWA CONFLICT" >
                                     {Number(applicant.gwascore).toFixed(2)}
