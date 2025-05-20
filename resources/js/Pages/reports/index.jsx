@@ -97,33 +97,58 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     const handleALSOnly = () => {
         const newState = listALS === 'OFF' ? 'ON' : 'OFF';
         setListALS(newState);
-        setListAthlete('OFF');
-        setOnlyGWAConflict('OFF');
-        setListAthleteState('OFF');
-        setListALSState('OFF');
-        applyFilters('OFF', 'OFF', 'OFF', newState, 'OFF');
+        if (newState === 'OFF') {
+            setListAthleteState('ON');
+            setListALSState('ON');
+            setListAthlete('OFF');
+            setOnlyGWAConflict('OFF');
+            applyFilters('ON', 'ON', 'OFF', newState, 'OFF');
+        } else {
+            setListAthleteState('OFF');
+            setListALSState('OFF');
+            setListAthlete('OFF');
+            setOnlyGWAConflict('OFF');
+            applyFilters('OFF', 'OFF', 'OFF', newState, 'OFF');
+        }
     };
 
     // Toggle only athlete applicants
     const handleAthleteOnly = () => {
         const newState = listAthlete === 'OFF' ? 'ON' : 'OFF';
         setListAthlete(newState);
-        setListALS('OFF');
-        setOnlyGWAConflict('OFF');
-        setListAthleteState('OFF');
-        setListALSState('OFF');
-        applyFilters('OFF', 'OFF', newState, 'OFF', 'OFF');
+        if (newState === 'OFF') {
+            setListAthleteState('ON');
+            setListALSState('ON');
+            setListALS('OFF');
+            setOnlyGWAConflict('OFF');
+            applyFilters('ON', 'ON', newState, 'OFF', 'OFF');
+        } else {
+            setListAthleteState('OFF');
+            setListALSState('OFF');
+            setListALS('OFF');
+            setOnlyGWAConflict('OFF');
+            applyFilters('OFF', 'OFF', newState, 'OFF', 'OFF');
+        }
+
     };
 
     // Toggle only GWA conflict applicants (gwascore <= 30)
     const handleOnlyGWAConflict = () => {
         const newState = onlyGWAConflict === 'OFF' ? 'ON' : 'OFF';
         setOnlyGWAConflict(newState);
-        setListAthlete('OFF');
-        setListALS('OFF');
-        setListAthleteState('OFF');
-        setListALSState('OFF');
-        applyFilters('OFF', 'OFF', 'OFF', 'OFF', newState);
+        if (newState === 'OFF') {
+            setListAthleteState('ON');
+            setListALSState('ON');
+            setListAthlete('OFF');
+            setListALS('OFF');
+            applyFilters('ON', 'ON', 'OFF', 'OFF', newState);
+        } else {
+            setListAthleteState('OFF');
+            setListALSState('OFF');
+            setListAthlete('OFF');
+            setListALS('OFF');
+            applyFilters('OFF', 'OFF', 'OFF', 'OFF', newState);
+        }
     };
 
 
@@ -259,7 +284,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                     <ul>
                         <li className='mt-2 text-gray-600'>
 
-                            <FontAwesomeIcon icon={faVolleyballBall} /> Athlete :
+                            <FontAwesomeIcon className='text-gray-900' icon={faVolleyballBall} /> Athlete :
 
                             <button
                                 onClick={handleAthlete}
@@ -273,8 +298,8 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                                 )}
                             </button>
                         </li>
-                        <li className='mt-2 text-gray-600'>
-                            <FontAwesomeIcon icon={faUser} /> ALS :
+                        <li className='mt-2 text-gray-600 mb-4'>
+                            <FontAwesomeIcon className='text-gray-900' icon={faUser} /> ALS :
 
                             <button
                                 onClick={handleALS}
@@ -288,9 +313,9 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                                 )}
                             </button>
                         </li>
-                        <li className='mt-2 text-gray-600'>
+                        <li className='mt-2 text-gray-600 ml-4'>
 
-                            <FontAwesomeIcon icon={faCircleUser} /> Only Athlete :
+                            <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only Athlete :
                             <button
                                 onClick={handleAthleteOnly}
                             >
@@ -303,8 +328,8 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                                 )}
                             </button>
                         </li>
-                        <li className='mt-2 text-gray-600'>
-                            <FontAwesomeIcon icon={faCircleUser} /> Only ALS :
+                        <li className='mt-2 text-gray-600 ml-4'>
+                            <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only ALS :
                             <button
                                 onClick={handleALSOnly}
                             >
@@ -317,17 +342,17 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                                 )}
                             </button>
                         </li>
-                        <li className='mt-2 text-gray-600'>
-                            <FontAwesomeIcon icon={faCircleUser} /> Only GWA with Conflict (GWA &lt;= 30 or GWA &gt; 100) :
+                        <li className='mt-2 text-gray-600 ml-4'>
+                            <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only GWA with Conflict (GWA &lt;= 30 or GWA &gt; 100) :
                             <button
                                 onClick={handleOnlyGWAConflict}
                             >
-                                {listALS === "ON" ? (
+                                {onlyGWAConflict === "ON" ? (
                                     <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{onlyGWAConflict}</span>
                                 ) : (
                                     <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{onlyGWAConflict}</span>
                                 )}
                             </button>
                         </li>
@@ -341,7 +366,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                 <div className='bg-white pl-2 text-[12px]'>
                     <p>Count: <u>{trackCount}</u></p>
                     <p>Aplicants with 0 Exam Score: <u>&nbsp;&nbsp;{examScoreConflictCount}&nbsp;&nbsp;</u> </p>
-                    <p>Conflict GWA: <u>&nbsp;&nbsp;{gwaScoreConflictCount}&nbsp;&nbsp;</u></p>
+                    <p>Conflict GWA (GWA &lt;= 30 or GWA &gt; 100) : <u>&nbsp;&nbsp;{gwaScoreConflictCount}&nbsp;&nbsp;</u></p>
 
                 </div>
                 <table cellspacing="0" cellpadding="4" className='bg-white'>
