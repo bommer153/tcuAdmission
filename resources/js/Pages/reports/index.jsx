@@ -54,7 +54,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         let filtered = applicantResultExam;
 
         if (gwaConflict === 'ON') {
-            filtered = applicantResultExam.filter(applicant => applicant.gwascore <= 30);
+            filtered = applicantResultExam.filter(applicant => applicant.gwascore <= 30 || applicant.gwascore > 100);
         } else if (onlyAthlete === 'ON') {
             filtered = applicantResultExam.filter(applicant => applicant.athlete === 'Yes');
         } else if (onlyALS === 'ON') {
