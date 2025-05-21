@@ -390,7 +390,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                         <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>Name</th>
                         <th
                             onClick={e => sortChanged('overall')}
-                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white"
+                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white cursor-pointer hover:text-blue-100 transition"
                         >
                             <div className="flex items-center justify-center">
                                 <span className="mr-1">Overall</span>
@@ -409,7 +409,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                         </th>
                         <th
                             onClick={e => sortChanged('exam_score')}
-                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white"
+                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white cursor-pointer hover:text-blue-100 transition"
                         >
                             <div className="flex items-center justify-center">
                                 <span className="mr-1">Exam (60%)</span>
@@ -429,7 +429,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                         </th>
                         <th
                             onClick={e => sortChanged('gwascore')}
-                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white"
+                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white cursor-pointer hover:text-blue-100 transition"
                         >
                             <div className="flex items-center justify-center">
                                 <span className="mr-1">GWA (40%)</span>
