@@ -4,13 +4,15 @@ import InputLabel from '@/Components/InputLabel';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import { faCircleUser, faDownload, faEye, faFile, faStar, faUser, faVolleyballBall } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faDownload, faEye, faFile, faSortAsc, faSortDesc, faStar, faUser, faVolleyballBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 
-export default function Reports({ auth, errors, examDates, examTimes, examRooms, applicantResultExam }) {
+export default function Reports({ auth, errors, examDates, examTimes, examRooms, applicantResultExam, queryParams = null }) {
+
+    queryParams = queryParams || {};
 
     const { data, setData } = useForm({
         date: "",
@@ -151,11 +153,23 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         }
     };
 
+    const sortChanged = (name) => {
+        if (name === queryParams.sort_field) {
+            queryParams.sort_direction = queryParams.sort_direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            queryParams.sort_field = name;
+            queryParams.sort_direction = 'asc';
+        }
+
+        router.get(route('reports.index', queryParams), {}, {
+            preserveScroll: true
+        });
+    };
 
 
     const examScoreConflictCount = currentList.filter(applicant => applicant.exam_score <= 0).length;
     const gwaScoreConflictCount = currentList.filter(applicant => applicant.gwascore <= 30 || applicant.gwascore > 100).length;
-    console.log(currentList)
+    // console.log(currentList)
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -369,14 +383,70 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                     <p>Conflict GWA (GWA &lt;= 30 or GWA &gt; 100) : <u>&nbsp;&nbsp;{gwaScoreConflictCount}&nbsp;&nbsp;</u></p>
 
                 </div>
-                <table cellspacing="0" cellpadding="4" className='bg-white'>
+                <table cellSpacing="0" cellPadding="4" className='bg-white'>
 
                     <tr>
                         <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>#</th>
                         <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>Name</th>
-                        <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>Overall</th>
-                        <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>Exam (60%)</th>
-                        <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>GWA (40%)</th>
+                        <th
+                            onClick={e => sortChanged('overall')}
+                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white"
+                        >
+                            <div className="flex items-center justify-center">
+                                <span className="mr-1">Overall</span>
+                                <div className="flex flex-col items-center leading-[0]">
+                                    <FontAwesomeIcon className={
+                                        "w-3 h-3 " +
+                                        (queryParams.sort_field === 'overall' && queryParams.sort_direction === 'asc' ? ' text-white ' : ' text-gray-500')
+                                    } icon={faSortAsc} />
+                                    <FontAwesomeIcon className={
+                                        "w-3 h-3 -mt-[12px] " +
+                                        (queryParams.sort_field === 'overall' && queryParams.sort_direction === 'desc' ? ' text-white ' : ' text-gray-500')
+                                    } icon={faSortDesc} />
+                                </div>
+
+                            </div>
+                        </th>
+                        <th
+                            onClick={e => sortChanged('exam_score')}
+                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white"
+                        >
+                            <div className="flex items-center justify-center">
+                                <span className="mr-1">Exam (60%)</span>
+                                <div className="flex flex-col items-center leading-[0]">
+                                    <FontAwesomeIcon className={
+                                        "w-3 h-3 " +
+                                        (queryParams.sort_field === 'exam_score' && queryParams.sort_direction === 'asc' ? ' text-white ' : ' text-gray-500')
+                                    } icon={faSortAsc} />
+                                    <FontAwesomeIcon className={
+                                        "w-3 h-3 -mt-[12px] " +
+                                        (queryParams.sort_field === 'exam_score' && queryParams.sort_direction === 'desc' ? ' text-white ' : ' text-gray-500')
+                                    } icon={faSortDesc} />
+                                </div>
+
+                            </div>
+
+                        </th>
+                        <th
+                            onClick={e => sortChanged('gwascore')}
+                            className="w-[10%] border border-black text-center text-[14px] font-bold bg-gray-700 text-white"
+                        >
+                            <div className="flex items-center justify-center">
+                                <span className="mr-1">GWA (40%)</span>
+                                <div className="flex flex-col items-center leading-[0]">
+                                    <FontAwesomeIcon className={
+                                        "w-3 h-3 " +
+                                        (queryParams.sort_field === 'gwascore' && queryParams.sort_direction === 'asc' ? ' text-white ' : ' text-gray-500')
+                                    } icon={faSortAsc} />
+                                    <FontAwesomeIcon className={
+                                        "w-3 h-3 -mt-[12px] " +
+                                        (queryParams.sort_field === 'gwascore' && queryParams.sort_direction === 'desc' ? ' text-white ' : ' text-gray-500')
+                                    } icon={faSortDesc} />
+                                </div>
+
+                            </div>
+                            
+                        </th>
                         <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>1st Choice</th>
                         <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>2nd Choice</th>
                         <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>3rd Choice</th>

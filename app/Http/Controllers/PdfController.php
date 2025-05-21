@@ -315,7 +315,8 @@ class PdfController extends Controller
         $examTime = ExamTime::get();
         $examRooms = ExamRoom::get();
 
-        $applicantResultExam = DB::table('applicants')
+
+        $query = DB::table('applicants')
             ->select(
                 DB::raw("CONCAT(last_name, ', ', first_name, ' ', middle_name) as name"),
                 DB::raw("CAST(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2)) * 0.4 AS DECIMAL(10,2)) as gwascore"),
@@ -331,17 +332,20 @@ class PdfController extends Controller
                 'athlete',
                 'applicantType',
             )
-            //   -where('status', '') // original code
-            ->whereNotNull('scored_by')
-            ->orderBy('overall', 'desc')
-            ->get();
+            ->whereNotNull('scored_by');
 
+        $sortField = request("sort_field", 'overall');
+        $sortDirection = request("sort_direction", "desc");
+
+        $applicantResultExam = $query->orderBy($sortField, $sortDirection)->get();
+        
         return inertia('reports/index', [
             'success' => session('success'),
             'examDates' => $examDate,
             'examTimes' => $examTime,
             'examRooms' => $examRooms,
             'applicantResultExam' => $applicantResultExam,
+            'queryParams' => request()->query() ?: null,
         ]);
     }
 
