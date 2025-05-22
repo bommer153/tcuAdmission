@@ -10,7 +10,7 @@ import { faCircleUser, faDownload, faEye, faFile, faSortAsc, faSortDesc, faStar,
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 
-export default function Reports({ auth, errors, examDates, examTimes, examRooms, applicantResultExam, queryParams = null }) {
+export default function Reports({ auth, errors, examDates, examTimes, examRooms, applicantResultExam, queryParams = null, courseList }) {
 
     queryParams = queryParams || {};
 
@@ -166,6 +166,17 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         });
     };
 
+    const searchFieldChange = (name, value) => {
+        if (value) {
+            queryParams[name] = value
+        } else {
+            delete queryParams[name]
+        }
+
+        router.get(route('reports.index', queryParams), {}, {
+            preserveScroll: true
+        });
+    }
 
     const examScoreConflictCount = currentList.filter(applicant => applicant.exam_score <= 0).length;
     const gwaScoreConflictCount = currentList.filter(applicant => applicant.gwascore <= 30 || applicant.gwascore > 100).length;
@@ -451,7 +462,49 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                         <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>2nd Choice</th>
                         <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>3rd Choice</th>
                     </tr>
-
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <SelectInput 
+                                className='text-[11px] w-[200px]'
+                                defaultValue={queryParams.first_course}
+                                onChange={ e => searchFieldChange('first_course', e.target.value)}
+                            >
+                                <option value="">Select Course</option>
+                                {courseList.map(course => (
+                                    <option value={course.course}>{course.course}</option>
+                                ))}
+                            </SelectInput>
+                        </th>
+                        <th>
+                            <SelectInput 
+                                className='text-[11px] w-[200px]'
+                                defaultValue={queryParams.second_course}
+                                onChange={ e => searchFieldChange('second_course', e.target.value)}
+                            >
+                                <option value="">Select Course</option>
+                                {courseList.map(course => (
+                                    <option value={course.course}>{course.course}</option>
+                                ))}
+                            </SelectInput>
+                        </th>
+                        <th>
+                            <SelectInput 
+                                className='text-[11px] w-[200px]'
+                                defaultValue={queryParams.third_course}
+                                onChange={ e => searchFieldChange('third_course', e.target.value)}
+                            >
+                                <option value="">Select Course</option>
+                                {courseList.map(course => (
+                                    <option value={course.course}>{course.course}</option>
+                                ))}
+                            </SelectInput>
+                        </th>
+                    </tr>
 
 
                     {currentList.map((applicant, index) => (

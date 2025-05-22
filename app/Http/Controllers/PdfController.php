@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActionLogs;
+use App\Models\courses;
 use Illuminate\Support\Facades\Auth;
 use TCPDF;
 use Illuminate\Http\Request;
@@ -315,6 +316,7 @@ class PdfController extends Controller
         $examTime = ExamTime::get();
         $examRooms = ExamRoom::get();
 
+        $courseList = courses::select('course')->get();
 
         $query = DB::table('applicants')
             ->select(
@@ -333,6 +335,18 @@ class PdfController extends Controller
                 'applicantType',
             )
             ->whereNotNull('scored_by');
+        
+        if (request('first_course')) {
+            $query->where('first_course',  request('first_course') );
+        }
+
+        if (request('second_course')) {
+            $query->where('second_course',  request('second_course') );
+        }
+        
+        if (request('third_course')) {
+            $query->where('third_course',  request('third_course') );
+        }
 
         $sortField = request("sort_field", 'overall');
         $sortDirection = request("sort_direction", "desc");
@@ -346,6 +360,7 @@ class PdfController extends Controller
             'examRooms' => $examRooms,
             'applicantResultExam' => $applicantResultExam,
             'queryParams' => request()->query() ?: null,
+            'courseList' => $courseList,
         ]);
     }
 
