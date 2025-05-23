@@ -309,13 +309,71 @@ class PdfController extends Controller
         return response($pdf->Output('exam_permit.pdf', 'I'))->header('Content-Type', 'application/pdf');
     }
 
-    public function index()
-    {
+    // public function index()
+    // {
 
+    //     $examDate = ExamDate::get();
+    //     $examTime = ExamTime::get();
+    //     $examRooms = ExamRoom::get();
+
+    //     $courseList = courses::select('course')->get();
+
+    //     $query = DB::table('applicants')
+    //         ->select(
+    //             DB::raw("CONCAT(last_name, ', ', first_name, ' ', middle_name) as name"),
+    //             DB::raw("CAST(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2)) * 0.4 AS DECIMAL(10,2)) as gwascore"),
+    //             DB::raw("CAST(((((exam_score / 150) * 100 * 0.5) + 50) * 0.6) AS DECIMAL(10,2)) as final_exam_score"),
+    //             DB::raw("CAST(((((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6)) AS DECIMAL(10,2)) as overall"),
+    //             // DB::raw("(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2))) * 0.4 as gwascore"),
+    //             // DB::raw("(((exam_score / 150) * 100 * 0.5) + 50) * 0.6 as final_exam_score"),
+    //             // DB::raw("(((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6) as overall"),
+    //             DB::raw("CAST(exam_score AS DECIMAL(10,2)) as exam_score"),
+    //             'first_course as firstChoice',
+    //             'second_course as secondChoice',
+    //             'third_course as thirdChoice',
+    //             'athlete',
+    //             'applicantType',
+    //         )
+    //         ->whereNotNull('scored_by');
+        
+    //     if (request('first_course')) {
+    //         $query->where('first_course',  request('first_course') );
+    //     }
+
+    //     if (request('second_course')) {
+    //         $query->where('second_course',  request('second_course') );
+    //     }
+        
+    //     if (request('third_course')) {
+    //         $query->where('third_course',  request('third_course') );
+    //     }
+
+        
+
+    //     $sortField = request("sort_field", 'overall');
+    //     $sortDirection = request("sort_direction", "desc");
+
+    //     $applicantResultExam = $query->orderBy($sortField, $sortDirection)->get();
+        
+    //     return inertia('reports/index', [
+    //         'success' => session('success'),
+    //         'examDates' => $examDate,
+    //         'examTimes' => $examTime,
+    //         'examRooms' => $examRooms,
+    //         'applicantResultExam' => $applicantResultExam,
+    //         'queryParams' => request()->query() ?: null,
+    //         'courseList' => $courseList,
+    //     ]);
+    // }
+
+
+    public function index(Request $request)
+    {
         $examDate = ExamDate::get();
         $examTime = ExamTime::get();
         $examRooms = ExamRoom::get();
 
+        // Keep this exactly as you wrote:
         $courseList = courses::select('course')->get();
 
         $query = DB::table('applicants')
@@ -324,9 +382,6 @@ class PdfController extends Controller
                 DB::raw("CAST(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2)) * 0.4 AS DECIMAL(10,2)) as gwascore"),
                 DB::raw("CAST(((((exam_score / 150) * 100 * 0.5) + 50) * 0.6) AS DECIMAL(10,2)) as final_exam_score"),
                 DB::raw("CAST(((((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6)) AS DECIMAL(10,2)) as overall"),
-                // DB::raw("(((((g11_gwa1 + g11_gwa2) / 2) * 0.8) + (g12_gwa1 * 0.2))) * 0.4 as gwascore"),
-                // DB::raw("(((exam_score / 150) * 100 * 0.5) + 50) * 0.6 as final_exam_score"),
-                // DB::raw("(((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6) as overall"),
                 DB::raw("CAST(exam_score AS DECIMAL(10,2)) as exam_score"),
                 'first_course as firstChoice',
                 'second_course as secondChoice',
@@ -335,31 +390,41 @@ class PdfController extends Controller
                 'applicantType',
             )
             ->whereNotNull('scored_by');
-        
-        if (request('first_course')) {
-            $query->where('first_course',  request('first_course') );
+
+        // Course filters on first, second, third course
+        if ($request->filled('first_course')) {
+            $query->where('first_course', $request->input('first_course'));
+        }
+        if ($request->filled('second_course')) {
+            $query->where('second_course', $request->input('second_course'));
+        }
+        if ($request->filled('third_course')) {
+            $query->where('third_course', $request->input('third_course'));
         }
 
-        if (request('second_course')) {
-            $query->where('second_course',  request('second_course') );
-        }
-        
-        if (request('third_course')) {
-            $query->where('third_course',  request('third_course') );
+        // Only apply overall filter
+        $action = $request->input('action', 'PASS');
+        $operator = $action === 'EXCESS' ? '<' : '>=';
+
+        $overallCalc = "ROUND(((((g11_gwa1 + g11_gwa2) / 2 * 0.8 + g12_gwa1 * 0.2) * 0.4) + ((((exam_score / 150) * 100 * 0.5) + 50) * 0.6)), 2)";
+
+        if ($request->filled('overall')) {
+            $overall = (float) $request->input('overall');
+            $query->whereRaw("$overallCalc $operator ?", [$overall]);
         }
 
-        $sortField = request("sort_field", 'overall');
-        $sortDirection = request("sort_direction", "desc");
+        $sortField = $request->input("sort_field", 'overall');
+        $sortDirection = $request->input("sort_direction", "desc");
 
         $applicantResultExam = $query->orderBy($sortField, $sortDirection)->get();
-        
+        // dd($request->all());
         return inertia('reports/index', [
             'success' => session('success'),
             'examDates' => $examDate,
             'examTimes' => $examTime,
             'examRooms' => $examRooms,
             'applicantResultExam' => $applicantResultExam,
-            'queryParams' => request()->query() ?: null,
+            'queryParams' => $request->query() ?: null,
             'courseList' => $courseList,
         ]);
     }

@@ -9,6 +9,7 @@ import * as XLSX from 'xlsx/xlsx.mjs';
 import { faCircleUser, faDownload, faEye, faFile, faSortAsc, faSortDesc, faStar, faUser, faVolleyballBall } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 export default function Reports({ auth, errors, examDates, examTimes, examRooms, applicantResultExam, queryParams = null, courseList }) {
 
@@ -23,8 +24,6 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
     const { data: counts, setData: setCounts } = useForm({
         count: ""
     })
-
-
 
     const [listAthleteState, setListAthleteState] = useState('ON');
     const [listALSState, setListALSState] = useState('ON');
@@ -178,9 +177,32 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
         });
     }
 
+    const [overall, setOverall] = useState(queryParams.overall ?? '');
+
+    useEffect(() => {
+        setOverall(queryParams.overall ?? '');
+    }, [queryParams.overall]);
+
+    const handleClick = (action) => {
+        const overallNum = Number(overall);
+        if (isNaN(overallNum)) {
+            alert('Please enter a valid overall grade.');
+            return;
+        }
+
+        const queryParamsForSearch = {
+            action,
+            overall: overallNum,
+        };
+
+        router.get(route('reports.index', queryParamsForSearch), {}, {
+            preserveScroll: true,
+        });
+    };
+
     const examScoreConflictCount = currentList.filter(applicant => applicant.exam_score <= 0).length;
     const gwaScoreConflictCount = currentList.filter(applicant => applicant.gwascore <= 30 || applicant.gwascore > 100).length;
-    // console.log(currentList)
+
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -295,98 +317,124 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
             <div className=" p-5 px-20">
 
-                <div className='mb-2 bg-white rounded p-4'>
-                    {auth.user.role == '1' && (
-                        <button
-                            onClick={handleExcel}
-                            className=' hover:underline'
-                        >
-                            <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
-                        </button>
-                    )}
-
-
-                    <ul>
-                        <li className='mt-2 text-gray-600'>
-
-                            <FontAwesomeIcon className='text-gray-900' icon={faVolleyballBall} /> Athlete :
-
+                <div className='flex gap-2'>
+                    <div className='mb-2 bg-white rounded p-4 flex-1'>
+                        {auth.user.role == '1' && (
                             <button
-                                onClick={handleAthlete}
+                                onClick={handleExcel}
+                                className=' hover:underline'
                             >
-                                {listAthleteState === "ON" ? (
-                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
-                                ) : (
-                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
-                                )}
+                                <FontAwesomeIcon icon={faDownload} /> EXCEL DOWNLOAD
                             </button>
-                        </li>
-                        <li className='mt-2 text-gray-600 mb-4'>
-                            <FontAwesomeIcon className='text-gray-900' icon={faUser} /> ALS :
+                        )}
 
-                            <button
-                                onClick={handleALS}
-                            >
-                                {listALSState === "ON" ? (
-                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALSState}</span>
-                                ) : (
-                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALSState}</span>
-                                )}
-                            </button>
-                        </li>
-                        <li className='mt-2 text-gray-600 ml-4'>
 
-                            <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only Athlete :
-                            <button
-                                onClick={handleAthleteOnly}
-                            >
-                                {listAthlete === "ON" ? (
-                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
-                                ) : (
-                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
-                                )}
-                            </button>
-                        </li>
-                        <li className='mt-2 text-gray-600 ml-4'>
-                            <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only ALS :
-                            <button
-                                onClick={handleALSOnly}
-                            >
-                                {listALS === "ON" ? (
-                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
-                                ) : (
-                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
-                                )}
-                            </button>
-                        </li>
-                        <li className='mt-2 text-gray-600 ml-4'>
-                            <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only GWA with Conflict (GWA &lt;= 30 or GWA &gt; 100) :
-                            <button
-                                onClick={handleOnlyGWAConflict}
-                            >
-                                {onlyGWAConflict === "ON" ? (
-                                    <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{onlyGWAConflict}</span>
-                                ) : (
-                                    <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
-                                        style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{onlyGWAConflict}</span>
-                                )}
-                            </button>
-                        </li>
-                    </ul>
+                        <ul>
+                            <li className='mt-2 text-gray-600'>
 
-                    <div>
-                        {/* put input here */}
+                                <FontAwesomeIcon className='text-gray-900' icon={faVolleyballBall} /> Athlete :
+
+                                <button
+                                    onClick={handleAthlete}
+                                >
+                                    {listAthleteState === "ON" ? (
+                                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                                    ) : (
+                                        <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthleteState}</span>
+                                    )}
+                                </button>
+                            </li>
+                            <li className='mt-2 text-gray-600 mb-4'>
+                                <FontAwesomeIcon className='text-gray-900' icon={faUser} /> ALS :
+
+                                <button
+                                    onClick={handleALS}
+                                >
+                                    {listALSState === "ON" ? (
+                                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALSState}</span>
+                                    ) : (
+                                        <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALSState}</span>
+                                    )}
+                                </button>
+                            </li>
+                            <li className='mt-2 text-gray-600 ml-4'>
+
+                                <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only Athlete :
+                                <button
+                                    onClick={handleAthleteOnly}
+                                >
+                                    {listAthlete === "ON" ? (
+                                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
+                                    ) : (
+                                        <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listAthlete}</span>
+                                    )}
+                                </button>
+                            </li>
+                            <li className='mt-2 text-gray-600 ml-4'>
+                                <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only ALS :
+                                <button
+                                    onClick={handleALSOnly}
+                                >
+                                    {listALS === "ON" ? (
+                                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                                    ) : (
+                                        <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{listALS}</span>
+                                    )}
+                                </button>
+                            </li>
+                            <li className='mt-2 text-gray-600 ml-4'>
+                                <FontAwesomeIcon className='text-gray-900' icon={faCircleUser} /> Only GWA with Conflict (GWA &lt;= 30 or GWA &gt; 100) :
+                                <button
+                                    onClick={handleOnlyGWAConflict}
+                                >
+                                    {onlyGWAConflict === "ON" ? (
+                                        <span className="ml-2 bg-green-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-green-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{onlyGWAConflict}</span>
+                                    ) : (
+                                        <span className="ml-2 bg-red-500 text-gray-100 rounded p-1 shadow-md text-[11px] hover:bg-red-700"
+                                            style={{ boxShadow: '0 2px 2px rgba(141, 136, 136, 0.5)' }}>{onlyGWAConflict}</span>
+                                    )}
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div>
+                            {/* put input here */}
+                        </div>
+
                     </div>
+                    <div className='mb-2 bg-white rounded p-4 flex-1 text-[12px]'>
+                        <div className="gap-2">
+                            <label className="font-bold text-right mr-2">Overall Grade Limit</label>
+                            <input
+                                className="h-[20px] border px-1"
+                                type="number"
+                                value={overall}
+                                onChange={(e) => setOverall(e.target.value)}
+                            />
 
+                            <button
+                                className='font-bold text-gray-100 bg-green-500 hover:bg-green-700 rounded p-1 ml-2'
+                                onClick={() => handleClick('PASS')}
+                            >
+                                PASS
+                            </button>
+                            <button
+                                className='font-bold text-gray-100 bg-yellow-500 hover:bg-yellow-700 rounded p-1 ml-2'
+                                onClick={() => handleClick('EXCESS')}
+                            >
+                                EXCESS
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div className='bg-white pl-2 text-[12px]'>
                     <p>Count: <u>{trackCount}</u></p>
@@ -456,7 +504,7 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                                 </div>
 
                             </div>
-                            
+
                         </th>
                         <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>1st Choice</th>
                         <th style={{ width: '15%', border: '1px solid black', textAlign: 'center', fontSize: '14px', fontWeight: 'bold', background: 'gray', color: 'white', }}>2nd Choice</th>
@@ -469,10 +517,10 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                         <th></th>
                         <th></th>
                         <th>
-                            <SelectInput 
+                            <SelectInput
                                 className='text-[11px] w-[200px]'
                                 defaultValue={queryParams.first_course}
-                                onChange={ e => searchFieldChange('first_course', e.target.value)}
+                                onChange={e => searchFieldChange('first_course', e.target.value)}
                             >
                                 <option value="">Select Course</option>
                                 {courseList.map(course => (
@@ -481,10 +529,10 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                             </SelectInput>
                         </th>
                         <th>
-                            <SelectInput 
+                            <SelectInput
                                 className='text-[11px] w-[200px]'
                                 defaultValue={queryParams.second_course}
-                                onChange={ e => searchFieldChange('second_course', e.target.value)}
+                                onChange={e => searchFieldChange('second_course', e.target.value)}
                             >
                                 <option value="">Select Course</option>
                                 {courseList.map(course => (
@@ -493,10 +541,10 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
                             </SelectInput>
                         </th>
                         <th>
-                            <SelectInput 
+                            <SelectInput
                                 className='text-[11px] w-[200px]'
                                 defaultValue={queryParams.third_course}
-                                onChange={ e => searchFieldChange('third_course', e.target.value)}
+                                onChange={e => searchFieldChange('third_course', e.target.value)}
                             >
                                 <option value="">Select Course</option>
                                 {courseList.map(course => (
@@ -508,16 +556,17 @@ export default function Reports({ auth, errors, examDates, examTimes, examRooms,
 
 
                     {currentList.map((applicant, index) => (
-
+                        
+                        
                         <tr
                             key={applicant.id}
-                            className={applicant.athlete === 'Yes' ? 'bg-yellow-300' : ''}
+                            className={applicant.athlete === 'Yes' ? ' bg-yellow-300 ' : ''}
                         >
                             <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '8px' }}>{index + 1}</th>
                             <th style={{ width: '20%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{applicant.name} {
                                 applicant.applicantType == "ALS" && <span className='p-1 bg-green-300 rounded'>ALS</span>}
                             </th>
-                            <th style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
+                            <th className={queryParams.action === 'PASS' ? ' bg-green-300 ' : ''} style={{ width: '10%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>{Number(applicant.overall).toFixed(2)}</th>
 
                             {applicant.exam_score > 0 ?
                                 <th style={{ width: '5%', border: '1px solid black', textAlign: 'center', fontSize: '10px' }}>({applicant.final_exam_score}) {applicant.exam_score}</th>
