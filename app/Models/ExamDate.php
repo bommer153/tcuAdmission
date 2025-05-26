@@ -9,5 +9,5 @@ class ExamDate extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    
+
 }
