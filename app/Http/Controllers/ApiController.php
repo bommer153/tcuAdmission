@@ -33,7 +33,7 @@ class ApiController extends Controller
 
         // Shared selected columns
         $selectFields = [
-            'first_name', 'middle_name', 'last_name', 'sex', 'age', 'dob', 'address', 'barangay',
+            'first_name', 'middle_name', 'last_name', 'email', 'sex', 'age', 'dob', 'address', 'barangay',
             'zip_code', 'contact_no', 'nationality', 'junior_high_school', 'senior_high_school', 
             'senior_high_school_year_graduated', 'lrn', 'strand', 'g11_gwa1', 'g11_gwa2', 
             'g12_gwa1', 'g12_gwa2', 'first_course', 'second_course', 'third_course',
