@@ -9,7 +9,7 @@ class RestrictIpMiddleware
 {
     // List of allowed IPs
     protected $allowedIps = [
-        '127.0.0.1',       // localhost
+        //'127.0.0.1',       // localhost
     ];
 
     public function handle(Request $request, Closure $next)
