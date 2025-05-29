@@ -72,7 +72,7 @@ class ApiController extends Controller
             })
             ->where('applicantType', 'ALS')
             ->whereNotNull('exam_score')
-            ->orderBy('exam_score', 'desc')
+            ->orderByRaw('CAST(exam_score AS UNSIGNED) DESC') 
             ->limit(6)
             ->get();
 
