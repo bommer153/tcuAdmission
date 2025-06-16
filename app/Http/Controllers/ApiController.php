@@ -51,7 +51,7 @@ class ApiController extends Controller
             })
             ->where('applicantType', '!=', 'ALS')
             ->whereNotNull('exam_score')
-            ->whereRaw("$admissionGradeRaw BETWEEN 89.00 AND 100")
+            ->whereRaw("$admissionGradeRaw BETWEEN 89.76 AND 100") //89.00 WAITING LIST
             ->orderBy('admission_grade', 'desc')
             ->get();
 
