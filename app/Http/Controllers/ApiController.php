@@ -33,21 +33,48 @@ class ApiController extends Controller
 
         // Shared selected columns
         $selectFields = [
-            'first_name', 'middle_name', 'last_name', 'email', 'sex', 'age', 'dob', 'address', 'barangay',
-            'zip_code', 'contact_no', 'nationality', 'junior_high_school', 'senior_high_school', 
-            'senior_high_school_year_graduated', 'lrn', 'strand', 'g11_gwa1', 'g11_gwa2', 
-            'g12_gwa1', 'g12_gwa2', 'first_course', 'second_course', 'third_course',
-            'name_of_parent', 'parent_comelec_no', 'parent_contact_no','student_comelec_no',
-            'exam_date', 'exam_time', 'exam_room_no', 'exam_seat_no',
-            'applicantType', 'athlete',
+            'first_name',
+            'middle_name',
+            'last_name',
+            'email',
+            'sex',
+            'age',
+            'dob',
+            'address',
+            'barangay',
+            'zip_code',
+            'contact_no',
+            'nationality',
+            'junior_high_school',
+            'senior_high_school',
+            'senior_high_school_year_graduated',
+            'lrn',
+            'strand',
+            'g11_gwa1',
+            'g11_gwa2',
+            'g12_gwa1',
+            'g12_gwa2',
+            'first_course',
+            'second_course',
+            'third_course',
+            'name_of_parent',
+            'parent_comelec_no',
+            'parent_contact_no',
+            'student_comelec_no',
+            'exam_date',
+            'exam_time',
+            'exam_room_no',
+            'exam_seat_no',
+            'applicantType',
+            'athlete',
             DB::raw("$admissionGradeRaw AS admission_grade"),
         ];
 
         // --- 1. Regular applicants ---
         $regular = applicant::select($selectFields)
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->where('athlete', 'No')
-                ->orWhereNull('athlete');
+                    ->orWhereNull('athlete');
             })
             ->where('applicantType', '!=', 'ALS')
             ->whereNotNull('exam_score')
@@ -66,13 +93,13 @@ class ApiController extends Controller
 
         // --- 3. Top 6 ALS applicants ---
         $als = applicant::select($selectFields)
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->where('athlete', 'No')
-                ->orWhereNull('athlete');
+                    ->orWhereNull('athlete');
             })
             ->where('applicantType', 'ALS')
             ->whereNotNull('exam_score')
-            ->orderByRaw('CAST(exam_score AS UNSIGNED) DESC') 
+            ->orderByRaw('CAST(exam_score AS UNSIGNED) DESC')
             ->limit(6)
             ->get();
 
@@ -92,7 +119,8 @@ class ApiController extends Controller
             'regular' => [
                 'count' => $regular->count(),
                 'data' => $regular,
-            ], 
+            ],
+
 
             'athletes' => [
                 'count' => $athletes->count(),
